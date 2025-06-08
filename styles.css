@@ -507,44 +507,81 @@ nav {
 /* Robot Animation */
 .akta-robot {
   position: absolute;
-  width: 50px;
-  height: 50px;
-  background: var(--primary-color);
+  width: 60px;
+  height: 60px;
+  background: #FFD700; /* Gold background */
   border-radius: 50%;
   z-index: 15;
   display: flex;
   align-items: center;
   justify-content: center;
-  filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.7));
+  filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.8));
   pointer-events: none;
   transition: transform 0.2s ease;
-  border: 2px solid #fff;
-  overflow: hidden;
+  border: 3px solid #fff;
+  overflow: visible; /* Allow text to overflow */
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
 }
 
 [data-theme="dark"] .akta-robot {
-  filter: drop-shadow(0 0 12px rgba(0, 0, 0, 0.7));
-  border: 2px solid #000;
+  filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.8));
+  border: 3px solid #000;
+}
+
+.akta-robot-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-origin: center;
 }
 
 .akta-robot i {
-  color: white;
-  font-size: 26px;
+  color: #000;
+  font-size: 30px;
   animation: robotPulse 1.5s infinite alternate;
+  position: relative;
+  z-index: 2;
 }
 
 [data-theme="dark"] .akta-robot i {
-  color: white;
+  color: #000;
+}
+
+/* AKTA Text */
+.akta-robot::before {
+  content: 'AKTA';
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #FFD700;
+  color: #000;
+  font-weight: bold;
+  font-size: 14px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  letter-spacing: 1px;
+  white-space: nowrap;
+  border: 2px solid #fff;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+  z-index: 3;
+}
+
+[data-theme="dark"] .akta-robot::before {
+  border: 2px solid #000;
 }
 
 @keyframes robotPulse {
   0% {
     transform: scale(1);
-    text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+    text-shadow: 0 0 5px rgba(255, 215, 0, 0.8);
   }
   100% {
     transform: scale(1.1);
-    text-shadow: 0 0 15px rgba(255, 255, 255, 1);
+    text-shadow: 0 0 15px rgba(255, 215, 0, 1);
   }
 }
 
@@ -555,9 +592,10 @@ nav {
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.8) 0%, rgba(0, 0, 0, 0) 70%);
-  opacity: 0.2;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.9) 0%, rgba(255, 215, 0, 0) 70%);
+  opacity: 0.4;
   pointer-events: none;
+  border-radius: 50%;
 }
 
 /* Padlock Animation */

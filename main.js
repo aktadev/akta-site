@@ -283,11 +283,19 @@ function initD3Connections() {
   const trustChain = document.querySelector('.trust-chain');
   const trustChainRect = trustChain.getBoundingClientRect();
   
-  // Create the AKTA robot
+  // Create the AKTA robot with advanced design
   if (!document.querySelector('.akta-robot')) {
     const robot = document.createElement('div');
     robot.className = 'akta-robot';
-    robot.innerHTML = '<i class="fas fa-robot"></i>';
+    
+    // Create content container for better positioning
+    const content = document.createElement('div');
+    content.className = 'akta-robot-content';
+    
+    // Use a more distinctive robot icon
+    content.innerHTML = '<i class="fas fa-user-astronaut"></i>';
+    
+    robot.appendChild(content);
     trustChain.appendChild(robot);
   }
   
@@ -645,8 +653,8 @@ function initD3Connections() {
      
      // Function to update robot position with easing
      function updateRobotPosition(x, y) {
-       robot.style.left = `${x - 25}px`; // 25 is half the robot width
-       robot.style.top = `${y - 25}px`;
+       robot.style.left = `${x - 30}px`; // 30 is half the robot width (60px)
+       robot.style.top = `${y - 30}px`;
      }
      
      // Track active animations to limit concurrent animations
@@ -748,11 +756,22 @@ function initD3Connections() {
        padlock.style.top = `${currentY - 15}px`;
        trustChain.appendChild(padlock);
        
-       // Play a simple transform on the robot when shooting
-       robot.style.transform = `rotate(${Math.atan2(targetY - currentY, targetX - currentX) * 180 / Math.PI}deg) scale(1.15)`;
+       // Play an enhanced transform on the robot when shooting
+       const rotationAngle = Math.atan2(targetY - currentY, targetX - currentX) * 180 / Math.PI;
+       robot.style.transform = `rotate(${rotationAngle}deg) scale(1.2)`;
+       
+       // Create a flash effect when shooting
+       const robotContent = robot.querySelector('.akta-robot-content');
+       if (robotContent) {
+         robotContent.style.filter = 'brightness(1.5)';
+       }
+       
        setTimeout(() => {
-         robot.style.transform = `rotate(${Math.atan2(targetY - currentY, targetX - currentX) * 180 / Math.PI}deg) scale(1)`;
-       }, 150);
+         robot.style.transform = `rotate(${rotationAngle}deg) scale(1)`;
+         if (robotContent) {
+           robotContent.style.filter = '';
+         }
+       }, 200);
        
        // Calculate trajectory
        const nodeRect = targetNode.getBoundingClientRect();
