@@ -68,7 +68,7 @@ function toggleMobileMenu() {
       <a href="#contributing">Contributing</a>
     </div>
     <div class="mobile-menu-actions">
-      <a href="https://github.com/your-github/akta" target="_blank">
+      <a href="https://github.com/akta" target="_blank">
         <i class="fab fa-github"></i> GitHub
       </a>
       <button id="mobile-theme-toggle">
@@ -362,46 +362,80 @@ function initD3Connections() {
     .attr("class", "connection-line")
     .attr("stroke-width", 2);
   
-  // Create data particle animations for each link
+  // Create data particle animations with manual animation
+  const envelopes = [];
+  
+  // Create envelope animation
   links.forEach((link, index) => {
-    // Create an envelope icon for the particle
-    const envelope = svg.append("text")
-      .attr("class", "data-particle")
-      .attr("text-anchor", "middle")
-      .attr("dominant-baseline", "middle")
-      .attr("font-family", "FontAwesome")
-      .attr("font-size", "10px")
-      .attr("opacity", 0)
-      .text("\uf0e0"); // FontAwesome envelope icon
+    // Create several envelopes per link for better effect
+    for (let i = 0; i < 2; i++) {
+      // Create envelope for this link
+      const envelope = svg.append("text")
+        .attr("class", "data-particle")
+        .attr("text-anchor", "middle")
+        .attr("dominant-baseline", "middle")
+        .attr("font-family", "FontAwesome")
+        .attr("font-size", "10px")
+        .attr("opacity", 0)
+        .text("\uf0e0"); // FontAwesome envelope icon
+      
+      // Add to our tracking array with animation properties
+      envelopes.push({
+        element: envelope,
+        source: link.source,
+        target: link.target,
+        progress: Math.random(), // Random starting point (0-1)
+        speed: 0.001 + Math.random() * 0.001, // Random speed
+        delay: index * 300 + i * 1000 // Stagger the animations
+      });
+    }
+  });
+  
+  // Animation timer for smooth animations
+  let lastTimestamp = 0;
+  function animateEnvelopes(timestamp) {
+    // Calculate time delta for smooth animation regardless of frame rate
+    const delta = lastTimestamp ? timestamp - lastTimestamp : 0;
+    lastTimestamp = timestamp;
     
-    // Function to animate envelope along the path
-    function animateEnvelope() {
-      // Calculate angle for proper envelope orientation
-      const dx = link.target.x - link.source.x;
-      const dy = link.target.y - link.source.y;
+    // Update each envelope
+    envelopes.forEach(env => {
+      // Only start after delay
+      env.delay -= delta;
+      if (env.delay > 0) return;
+      
+      // Update progress (loop from 0 to 1)
+      env.progress += env.speed * delta;
+      if (env.progress > 1) env.progress = 0;
+      
+      // Calculate current position along the path
+      const currentX = env.source.x + (env.target.x - env.source.x) * env.progress;
+      const currentY = env.source.y + (env.target.y - env.source.y) * env.progress;
+      
+      // Calculate angle for rotation
+      const dx = env.target.x - env.source.x;
+      const dy = env.target.y - env.source.y;
       const angle = Math.atan2(dy, dx) * 180 / Math.PI;
       
-      envelope
-        .attr("opacity", 0)
-        .attr("x", link.source.x)
-        .attr("y", link.source.y)
-        .attr("transform", `rotate(${angle}, ${link.source.x}, ${link.source.y})`)
-        .transition()
-        .duration(2000)
-        .delay(index * 300)
-        .attr("opacity", 1)
-        .attr("x", link.target.x)
-        .attr("y", link.target.y)
-        .attr("transform", `rotate(${angle}, ${link.target.x}, ${link.target.y})`)
-        .transition()
-        .duration(200)
-        .attr("opacity", 0)
-        .on("end", animateEnvelope);
-    }
+      // Fade in at start, fade out at end of path
+      let opacity = 1;
+      if (env.progress < 0.1) opacity = env.progress * 10; // Fade in
+      else if (env.progress > 0.9) opacity = (1 - env.progress) * 10; // Fade out
+      
+      // Update envelope position and rotation
+      env.element
+        .attr("x", currentX)
+        .attr("y", currentY)
+        .attr("opacity", opacity)
+        .attr("transform", `rotate(${angle}, ${currentX}, ${currentY})`);
+    });
     
-    // Start animation after a short delay
-    setTimeout(animateEnvelope, 500 + index * 200);
-  });
+    // Continue animation loop
+    requestAnimationFrame(animateEnvelopes);
+  }
+  
+    // Start animation loop
+  requestAnimationFrame(animateEnvelopes);
   
   // Implement manual drag handling for direct DOM elements
   nodeElements.forEach(element => {
