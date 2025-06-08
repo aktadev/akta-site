@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Akta - Secure Trust Framework for AI Agents</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="static/akta-logo-light.png" id="favicon">
+    <!-- Add D3.js for dynamic SVG connections -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <div class="animated-background"></div>
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="#" class="logo-container">
+                    <img src="static/akta-logo-light.png" alt="Akta Logo" class="logo-light">
+                    <img src="static/akta-logo-dark.png" alt="Akta Logo" class="logo-dark">
+                    <span>Akta</span>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="#overview">Overview</a>
+                <a href="#challenge">Challenge</a>
+                <a href="#concepts">Concepts</a>
+                <a href="#delegation">Delegation</a>
+                <a href="#use-cases">Use Cases</a>
+                <a href="#features">Features</a>
+                <a href="#contributing">Contributing</a>
+            </div>
+            <div class="right-nav">
+                <div class="github-link">
+                    <a href="https://github.com/your-github/akta" target="_blank" aria-label="GitHub Repository">
+                        <i class="fab fa-github"></i>
+                    </a>
+                </div>
+                <div class="theme-toggle">
+                    <button id="theme-toggle-btn" aria-label="Toggle dark mode">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+                <div class="mobile-menu-toggle">
+                    <button id="mobile-menu-btn" aria-label="Toggle mobile menu">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="hero" class="hero-section">
+            <div class="hero-backdrop"></div>
+            <div class="container">
+                <div class="hero-content">
+                    <div class="hero-logo">
+                        <img src="static/akta-logo-light.png" alt="Akta Logo" class="logo-light">
+                        <img src="static/akta-logo-dark.png" alt="Akta Logo" class="logo-dark">
+                    </div>
+                    <h1>Akta</h1>
+                    <h2>Secure Trust Framework for AI Agents</h2>
+                    <p>Cryptographically verifiable capabilities and delegation for autonomous systems.</p>
+                    <p class="agent-network-info">Our framework enables secure collaboration between distributed AI agents, providing verified credentials and delegated authority across agent networks.</p>
+                    <div class="cta-buttons">
+                        <a href="./docs/quick_start.md" class="btn primary-btn">
+                            <span>Get Started</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                        <a href="https://github.com/your-github/akta" class="btn secondary-btn" target="_blank">
+                            <i class="fab fa-github"></i> 
+                            <span>GitHub</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="hero-shape">
+                    <div class="trust-chain">
+                        <!-- SVG container for connections -->
+                        <svg id="connections-svg" width="400" height="400"></svg>
+                        
+                        <!-- Top Node -->
+                        <div class="node node-1" data-node-id="1">
+                            <i class="fas fa-robot"></i>
+                            <span class="pulse"></span>
+                            <div class="node-tooltip">Primary Controller Agent</div>
+                        </div>
+                        
+                        <!-- Left Middle Node -->
+                        <div class="node node-2" data-node-id="2">
+                            <i class="fas fa-microchip"></i>
+                            <span class="pulse"></span>
+                            <div class="node-tooltip">Processor Agent</div>
+                        </div>
+                        
+                        <!-- Right Middle Node -->
+                        <div class="node node-3" data-node-id="3">
+                            <i class="fas fa-brain"></i>
+                            <span class="pulse"></span>
+                            <div class="node-tooltip">Intelligence Agent</div>
+                        </div>
+                        
+                        <!-- Left Bottom Node -->
+                        <div class="node node-4" data-node-id="4">
+                            <i class="fas fa-cogs"></i>
+                            <span class="pulse"></span>
+                            <div class="node-tooltip">Operations Agent</div>
+                        </div>
+                        
+                        <!-- Right Bottom Node -->
+                        <div class="node node-5" data-node-id="5">
+                            <i class="fas fa-server"></i>
+                            <span class="pulse"></span>
+                            <div class="node-tooltip">Data Storage Agent</div>
+                        </div>
+                        
+                        <!-- Bottom Node -->
+                        <div class="node node-6" data-node-id="6">
+                            <i class="fas fa-project-diagram"></i>
+                            <span class="pulse"></span>
+                            <div class="node-tooltip">Network Coordinator</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="scroll-indicator">
+                <div class="mouse">
+                    <div class="wheel"></div>
+                </div>
+                <div class="arrows">
+                    <span></span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Overview Section -->
+        <section id="overview" class="section">
+            <div class="container">
+                <h2 class="gradient-text">Overview</h2>
+                <p>Akta is a prototype for secure, agent-to-agent interactions using DIDs and VCs.</p>
+                <div class="warning-box">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>Prototype Disclaimer: Akta is under active development. The API and functionality may change as the project evolves.</p>
+                </div>
+            </div>
+            <div class="section-divider">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                    <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"></path>
+                </svg>
+            </div>
+        </section>
+
+        <!-- The Challenge Section -->
+        <section id="challenge" class="section alt-bg">
+            <div class="container">
+                <h2 class="gradient-text">The Challenge</h2>
+                <p>As AI agents become more autonomous, establishing trust, managing delegation, and verifying claims between agents becomes critical.</p>
+                <div class="challenge-grid">
+                    <div class="challenge-item">
+                        <div class="hexagon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h3>Trust</h3>
+                        <p>How can agents trust the identities and capabilities of other agents?</p>
+                    </div>
+                    <div class="challenge-item">
+                        <div class="hexagon">
+                            <i class="fas fa-exchange-alt"></i>
+                        </div>
+                        <h3>Delegation</h3>
+                        <p>How can we safely delegate permissions between systems?</p>
+                    </div>
+                    <div class="challenge-item">
+                        <div class="hexagon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h3>Verification</h3>
+                        <p>How can we cryptographically verify claims about capabilities?</p>
+                    </div>
+                </div>
+            </div>
+            <div class="section-divider flipped">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                    <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"></path>
+                </svg>
+            </div>
+        </section>
+
+        <!-- Core Concepts Section -->
+        <section id="concepts" class="section">
+            <div class="container">
+                <h2 class="gradient-text">Core Concepts</h2>
+                <div class="concepts-grid">
+                    <div class="concept-card">
+                        <div class="card-glow"></div>
+                        <div class="concept-icon">
+                            <i class="fas fa-fingerprint"></i>
+                        </div>
+                        <h3>Verifiable Identity with DIDs</h3>
+                        <p>Decentralized Identifiers provide cryptographically verifiable digital identities for agents.</p>
+                    </div>
+                    <div class="concept-card">
+                        <div class="card-glow"></div>
+                        <div class="concept-icon">
+                            <i class="fas fa-key"></i>
+                        </div>
+                        <h3>Verifiable Capabilities</h3>
+                        <p>Capabilities and permissions are expressed as Verifiable Credentials that can be cryptographically verified.</p>
+                    </div>
+                    <div class="concept-card">
+                        <div class="card-glow"></div>
+                        <div class="concept-icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <h3>Credential Store</h3>
+                        <p>Secure storage mechanism for managing and retrieving credentials across agent interactions.</p>
+                    </div>
+                    <div class="concept-card">
+                        <div class="card-glow"></div>
+                        <div class="concept-icon">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <h3>End-to-End Integrity</h3>
+                        <p>Cryptographic assurance that credentials haven't been tampered with throughout the delegation chain.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="section-divider">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                    <path d="M985.66,92.83C906.67,72,823.78,31,743.84,14.19c-82.26-17.34-168.06-16.33-250.45.39-57.84,11.73-114,31.07-172,41.86A600.21,600.21,0,0,1,0,27.35V120H1200V95.8C1132.19,118.92,1055.71,111.31,985.66,92.83Z"></path>
+                </svg>
+            </div>
+        </section>
+
+        <!-- Secure Delegation Section -->
+        <section id="delegation" class="section alt-bg">
+            <div class="container">
+                <h2 class="gradient-text">Secure Delegation</h2>
+                <p>Akta enables secure delegation of capabilities between agents through a verifiable process:</p>
+                <div class="delegation-flow">
+                    <div class="flow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-icon"><i class="fas fa-certificate"></i></div>
+                        <h3>Issuance</h3>
+                        <p>Root authority issues verifiable credentials to agents</p>
+                    </div>
+                    <div class="flow-connector">
+                        <div class="pulse-line"></div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-icon"><i class="fas fa-save"></i></div>
+                        <h3>Storage</h3>
+                        <p>Credentials are securely stored in the agent's credential store</p>
+                    </div>
+                    <div class="flow-connector">
+                        <div class="pulse-line"></div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-icon"><i class="fas fa-share-alt"></i></div>
+                        <h3>Delegation</h3>
+                        <p>Agents delegate subset of capabilities to other agents</p>
+                    </div>
+                    <div class="flow-connector">
+                        <div class="pulse-line"></div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-icon"><i class="fas fa-check-double"></i></div>
+                        <h3>Verification</h3>
+                        <p>Receiving agents verify the delegation chain cryptographically</p>
+                    </div>
+                </div>
+            </div>
+            <div class="section-divider flipped">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                    <path d="M985.66,92.83C906.67,72,823.78,31,743.84,14.19c-82.26-17.34-168.06-16.33-250.45.39-57.84,11.73-114,31.07-172,41.86A600.21,600.21,0,0,1,0,27.35V120H1200V95.8C1132.19,118.92,1055.71,111.31,985.66,92.83Z"></path>
+                </svg>
+            </div>
+        </section>
+
+        <!-- Use Cases Section -->
+        <section id="use-cases" class="section">
+            <div class="container">
+                <h2 class="gradient-text">Use Cases</h2>
+                <div class="use-cases-grid">
+                    <div class="use-case-card">
+                        <div class="card-glow"></div>
+                        <div class="use-case-icon">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <h3>Automated Workflows</h3>
+                        <p>Securely delegate tasks across multi-agent systems with verifiable authority.</p>
+                    </div>
+                    <div class="use-case-card">
+                        <div class="card-glow"></div>
+                        <div class="use-case-icon">
+                            <i class="fas fa-share-square"></i>
+                        </div>
+                        <h3>Resource Sharing</h3>
+                        <p>Grant temporary access to resources with cryptographic proof of authorization.</p>
+                    </div>
+                    <div class="use-case-card">
+                        <div class="card-glow"></div>
+                        <div class="use-case-icon">
+                            <i class="fas fa-network-wired"></i>
+                        </div>
+                        <h3>Agent Ecosystems</h3>
+                        <p>Build complex systems of specialized agents with clear trust relationships.</p>
+                    </div>
+                    <div class="use-case-card">
+                        <div class="card-glow"></div>
+                        <div class="use-case-icon">
+                            <i class="fas fa-code-branch"></i>
+                        </div>
+                        <h3>Foundation for Protocols</h3>
+                        <p>Build on Akta for Agent-to-Agent (A2A) and Multi-Party Compute (MPC) protocols.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="section-divider">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                    <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25"></path>
+                    <path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" opacity=".5"></path>
+                    <path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z"></path>
+                </svg>
+            </div>
+        </section>
+
+        <!-- Planned Features Section -->
+        <section id="features" class="section alt-bg">
+            <div class="container">
+                <h2 class="gradient-text">Planned Features</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="card-glow"></div>
+                        <div class="feature-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <h3>Rekor Integration</h3>
+                        <p>Immutable audit log for credential issuance and revocation.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="card-glow"></div>
+                        <div class="feature-icon">
+                            <i class="fas fa-sitemap"></i>
+                        </div>
+                        <h3>Merkle Tree Registry</h3>
+                        <p>Efficient cryptographic proof of credential status.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="card-glow"></div>
+                        <div class="feature-icon">
+                            <i class="fas fa-link"></i>
+                        </div>
+                        <h3>LangChain/Autogen Support</h3>
+                        <p>Native integration with popular agent frameworks.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="section-divider flipped">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                    <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25"></path>
+                    <path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" opacity=".5"></path>
+                    <path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z"></path>
+                </svg>
+            </div>
+        </section>
+
+        <!-- Contributing Section -->
+        <section id="contributing" class="section">
+            <div class="container">
+                <h2 class="gradient-text">Contributing</h2>
+                <p>Akta is an open-source project that welcomes contributions from the community.</p>
+                <div class="contributing-content">
+                    <div class="contribute-card">
+                        <div class="card-glow"></div>
+                        <div class="contribute-icon">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <h3>Good First Issues</h3>
+                        <p>Look for issues tagged "good first issue" to get started with contributing to Akta.</p>
+                    </div>
+                    <div class="contribute-card">
+                        <div class="card-glow"></div>
+                        <div class="contribute-icon">
+                            <i class="fas fa-hands-helping"></i>
+                        </div>
+                        <h3>Mentorship</h3>
+                        <p>Our community provides friendly mentorship to help you make your first contribution.</p>
+                    </div>
+                </div>
+                <a href="https://github.com/your-github/akta/issues" class="btn primary-btn glow-btn" target="_blank">
+                    <span>Browse Issues</span>
+                    <i class="fas fa-external-link-alt"></i>
+                </a>
+            </div>
+            <div class="section-divider">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                    <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"></path>
+                </svg>
+            </div>
+        </section>
+
+        <!-- Get Involved Section -->
+        <section id="get-involved" class="section alt-bg">
+            <div class="container">
+                <h2 class="gradient-text">Get Involved</h2>
+                <p>We'd love to hear about your experiences with Akta and how you're using it in your projects.</p>
+                <div class="involved-options">
+                    <a href="https://github.com/your-github/akta/discussions" class="involved-option" target="_blank">
+                        <div class="card-glow"></div>
+                        <div class="involved-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <h3>Join the Discussion</h3>
+                        <p>Share ideas and feedback in GitHub Discussions</p>
+                    </a>
+                    <a href="mailto:contact@example.com" class="involved-option">
+                        <div class="card-glow"></div>
+                        <div class="involved-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <h3>Contact Us</h3>
+                        <p>Reach out directly with questions or proposals</p>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <div class="footer-logo">
+                        <img src="static/akta-logo-light.png" alt="Akta Logo" class="logo-light">
+                        <img src="static/akta-logo-dark.png" alt="Akta Logo" class="logo-dark">
+                    </div>
+                    <p>Akta is released under the MIT License.</p>
+                    <p>&copy; 2023 Akta Contributors</p>
+                </div>
+                <div class="footer-links">
+                    <a href="https://github.com/your-github/akta" target="_blank">
+                        <i class="fab fa-github"></i> GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="main.js"></script>
+</body>
+</html> 
