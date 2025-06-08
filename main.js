@@ -365,30 +365,27 @@ function initD3Connections() {
   // Create data particle animations with manual animation
   const envelopes = [];
   
-  // Create envelope animation
+  // Create envelope animation - just one per connection
   links.forEach((link, index) => {
-    // Create several envelopes per link for better effect
-    for (let i = 0; i < 2; i++) {
-      // Create envelope for this link
-      const envelope = svg.append("text")
-        .attr("class", "data-particle")
-        .attr("text-anchor", "middle")
-        .attr("dominant-baseline", "middle")
-        .attr("font-family", "FontAwesome")
-        .attr("font-size", "10px")
-        .attr("opacity", 0)
-        .text("\uf0e0"); // FontAwesome envelope icon
-      
-      // Add to our tracking array with animation properties
-      envelopes.push({
-        element: envelope,
-        source: link.source,
-        target: link.target,
-        progress: Math.random(), // Random starting point (0-1)
-        speed: 0.001 + Math.random() * 0.001, // Random speed
-        delay: index * 300 + i * 1000 // Stagger the animations
-      });
-    }
+    // Create one envelope per link
+    const envelope = svg.append("text")
+      .attr("class", "data-particle")
+      .attr("text-anchor", "middle")
+      .attr("dominant-baseline", "middle")
+      .attr("font-family", "FontAwesome")
+      .attr("font-size", "10px")
+      .attr("opacity", 0)
+      .text("\uf0e0"); // FontAwesome envelope icon
+    
+    // Add to our tracking array with animation properties
+    envelopes.push({
+      element: envelope,
+      source: link.source,
+      target: link.target,
+      progress: 0, // Start at the beginning
+      speed: 0.0005, // Consistent speed
+      delay: index * 500 // Stagger the animations
+    });
   });
   
   // Animation timer for smooth animations
@@ -406,7 +403,15 @@ function initD3Connections() {
       
       // Update progress (loop from 0 to 1)
       env.progress += env.speed * delta;
-      if (env.progress > 1) env.progress = 0;
+      if (env.progress > 1) {
+        // Reset to beginning after completing path
+        env.progress = 0;
+        // Add a pause between animations
+        env.delay = 1000;
+        // Hide envelope during pause
+        env.element.attr("opacity", 0);
+        return;
+      }
       
       // Calculate current position along the path
       const currentX = env.source.x + (env.target.x - env.source.x) * env.progress;
@@ -417,7 +422,7 @@ function initD3Connections() {
       const dy = env.target.y - env.source.y;
       const angle = Math.atan2(dy, dx) * 180 / Math.PI;
       
-      // Fade in at start, fade out at end of path
+      // Full opacity in the middle, fade at ends
       let opacity = 1;
       if (env.progress < 0.1) opacity = env.progress * 10; // Fade in
       else if (env.progress > 0.9) opacity = (1 - env.progress) * 10; // Fade out
