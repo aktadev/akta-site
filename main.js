@@ -285,7 +285,8 @@ function initD3Connections() {
       x: rect.left - trustChain.left + rect.width/2,
       y: rect.top - trustChain.top + rect.height/2,
       width: rect.width,
-      height: rect.height
+      height: rect.height,
+      element: node
     };
   });
   
@@ -307,10 +308,16 @@ function initD3Connections() {
   // Clear existing connections
   svg.selectAll("*").remove();
   
+  // Create a map for quick node lookup
+  const nodeMap = {};
+  nodeData.forEach(node => {
+    nodeMap[node.id] = node;
+  });
+  
   // Add lines for connections
-  connections.forEach((connection, index) => {
-    const source = nodeData.find(n => n.id === connection.source);
-    const target = nodeData.find(n => n.id === connection.target);
+  const lines = connections.map((connection, index) => {
+    const source = nodeMap[connection.source];
+    const target = nodeMap[connection.target];
     
     if (source && target) {
       // Create line
@@ -322,36 +329,131 @@ function initD3Connections() {
         .attr("class", "connection-line")
         .attr("id", `connection-${source.id}-${target.id}`);
       
-      // Create animated particles along each line
-      const totalLength = Math.sqrt(Math.pow(target.x - source.x, 2) + Math.pow(target.y - source.y, 2));
-      
-      // Append circle for particle
-      const particle = svg.append("circle")
+      return {
+        element: line,
+        source: source,
+        target: target
+      };
+    }
+    return null;
+  }).filter(line => line !== null);
+  
+  // Create envelopes (instead of particles) for each connection
+  connections.forEach((connection, index) => {
+    const source = nodeMap[connection.source];
+    const target = nodeMap[connection.target];
+    
+    if (source && target) {
+      // Create an envelope icon for the particle
+      const envelope = svg.append("text")
         .attr("class", "data-particle")
-        .attr("cx", source.x)
-        .attr("cy", source.y);
+        .attr("x", source.x)
+        .attr("y", source.y)
+        .attr("text-anchor", "middle")
+        .attr("dominant-baseline", "middle")
+        .attr("font-family", "FontAwesome")
+        .attr("font-size", "10px")
+        .text("\uf0e0"); // FontAwesome envelope icon
       
-      // Animate particle
-      function animateParticle() {
-        particle
+      // Calculate angle for proper envelope orientation
+      const dx = target.x - source.x;
+      const dy = target.y - source.y;
+      const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+      
+      // Animate envelope along the path
+      function animateEnvelope() {
+        envelope
           .attr("opacity", 0)
-          .attr("cx", source.x)
-          .attr("cy", source.y)
+          .attr("x", source.x)
+          .attr("y", source.y)
+          .attr("transform", `rotate(${angle}, ${source.x}, ${source.y})`)
           .transition()
           .duration(2000)
           .delay(index * 300)
           .attr("opacity", 1)
-          .attr("cx", target.x)
-          .attr("cy", target.y)
+          .attr("x", target.x)
+          .attr("y", target.y)
+          .attr("transform", `rotate(${angle}, ${target.x}, ${target.y})`)
           .transition()
           .duration(200)
           .attr("opacity", 0)
-          .on("end", animateParticle);
+          .on("end", animateEnvelope);
       }
       
       // Start animation
-      animateParticle();
+      animateEnvelope();
     }
+  });
+  
+  // Implement dragging functionality
+  nodeElements.forEach(node => {
+    let isDragging = false;
+    let offsetX, offsetY;
+    const nodeId = node.getAttribute('data-node-id');
+    const nodeData = nodeMap[nodeId];
+    
+    // Mouse down event to start dragging
+    node.addEventListener('mousedown', function(e) {
+      isDragging = true;
+      
+      // Calculate offset from the center of the node
+      const rect = node.getBoundingClientRect();
+      offsetX = e.clientX - rect.left - rect.width / 2;
+      offsetY = e.clientY - rect.top - rect.height / 2;
+      
+      // Add active class for styling
+      node.classList.add('active-node');
+      
+      e.preventDefault();
+    });
+    
+    // Mouse move event to update position while dragging
+    document.addEventListener('mousemove', function(e) {
+      if (!isDragging) return;
+      
+      const trustChain = document.querySelector('.trust-chain').getBoundingClientRect();
+      
+      // Calculate new position relative to the trust chain container
+      let newX = e.clientX - trustChain.left - offsetX - node.offsetWidth / 2;
+      let newY = e.clientY - trustChain.top - offsetY - node.offsetHeight / 2;
+      
+      // Keep node within container bounds
+      newX = Math.max(0, Math.min(trustChain.width - node.offsetWidth, newX));
+      newY = Math.max(0, Math.min(trustChain.height - node.offsetHeight, newY));
+      
+      // Update node position
+      node.style.left = `${newX}px`;
+      node.style.top = `${newY}px`;
+      node.style.right = 'auto';
+      node.style.bottom = 'auto';
+      node.style.transform = 'none';
+      
+      // Update nodeData position
+      nodeData.x = newX + node.offsetWidth / 2;
+      nodeData.y = newY + node.offsetHeight / 2;
+      
+      // Update connected lines
+      lines.forEach(line => {
+        if (line.source.id === nodeId) {
+          line.element
+            .attr("x1", nodeData.x)
+            .attr("y1", nodeData.y);
+        }
+        if (line.target.id === nodeId) {
+          line.element
+            .attr("x2", nodeData.x)
+            .attr("y2", nodeData.y);
+        }
+      });
+    });
+    
+    // Mouse up event to stop dragging
+    document.addEventListener('mouseup', function() {
+      if (isDragging) {
+        isDragging = false;
+        node.classList.remove('active-node');
+      }
+    });
   });
 }
 

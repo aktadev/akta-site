@@ -455,10 +455,11 @@ nav {
   stroke: var(--primary-color);
 }
 
-/* SVG Data Particles */
+/* SVG Data Particles (now envelopes) */
 .data-particle {
   fill: var(--primary-color);
-  r: 4;
+  font-size: 10px;
+  pointer-events: none;
 }
 
 [data-theme="dark"] .data-particle {
@@ -476,8 +477,10 @@ nav {
   position: absolute;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
   color: white;
-  transition: transform 0.3s ease;
+  transition: box-shadow 0.3s ease; /* Only transition the shadow, not position */
   z-index: 2;
+  user-select: none; /* Prevent text selection during drag */
+  touch-action: none; /* Improve touch behavior */
 }
 
 .node i {
@@ -485,9 +488,10 @@ nav {
 }
 
 .node:hover {
-  transform: scale(1.15) !important;
+  /* Remove transform scale effect */
   z-index: 10;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  cursor: move; /* Show move cursor */
 }
 
 /* Position nodes like in the image */
@@ -1491,24 +1495,12 @@ footer {
 
 /* Active Node Animation */
 .active-node {
-  animation: node-activate 1s ease;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+  /* Remove animation that causes movement */
 }
 
 [data-theme="dark"] .active-node {
   box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
-}
-
-@keyframes node-activate {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.2);
-  }
-  100% {
-    transform: scale(1);
-  }
 }
 
 .active-node .pulse {
