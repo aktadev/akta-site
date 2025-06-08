@@ -1,10 +1,10 @@
-# Akta Website
+# AKTA Website
 
-This is the official website for the Akta project, a secure trust framework for AI agents.
+This is the official website for the AKTA project, a secure trust framework for AI agents.
 
 ## About
 
-The Akta website is a static site built with HTML, CSS, and JavaScript, designed to be hosted on GitHub Pages. It provides information about the Akta project, its core concepts, use cases, and how to get involved.
+The AKTA website is a static site built with HTML, CSS, and JavaScript, designed to be hosted on GitHub Pages. It provides information about the AKTA project, its core concepts, use cases, and how to get involved.
 
 ## Features
 

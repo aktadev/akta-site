@@ -504,6 +504,10 @@ nav {
   font-size: 1.4rem;
 }
 
+[data-theme="dark"] .node i {
+  color: #000000; /* Black icon in dark mode */
+}
+
 /* Robot Animation */
 .akta-robot {
   position: absolute;
@@ -646,10 +650,6 @@ nav {
   animation: nodeFlash 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.node-flash i {
-  animation: iconPulse 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
 @keyframes iconPulse {
   0% {
     color: white;
@@ -661,6 +661,21 @@ nav {
   }
   100% {
     color: white;
+    transform: scale(1);
+  }
+}
+
+@keyframes iconPulseDark {
+  0% {
+    color: black;
+    transform: scale(1);
+  }
+  50% {
+    color: rgb(0, 0, 0);
+    transform: scale(1.3);
+  }
+  100% {
+    color: black;
     transform: scale(1);
   }
 }
@@ -1722,4 +1737,12 @@ footer {
 
 [data-theme="dark"] .agent-network-info {
   background: rgba(0, 0, 0, 0.2);
+}
+
+.node-flash i {
+  animation: iconPulse 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+[data-theme="dark"] .node-flash i {
+  animation: iconPulseDark 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 } 

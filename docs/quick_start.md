@@ -1,6 +1,6 @@
-# Akta Quick Start Guide
+# AKTA Quick Start Guide
 
-Welcome to Akta, a secure trust framework for AI agents. This guide will help you get started with using Akta in your projects.
+Welcome to AKTA, a secure trust framework for AI agents. This guide will help you get started with using AKTA in your projects.
 
 ## Installation
 
@@ -10,7 +10,7 @@ pip install akta
 
 ## Basic Usage
 
-Here's a simple example of how to use Akta to create and verify an agent identity:
+Here's a simple example of how to use AKTA to create and verify an agent identity:
 
 ```python
 from akta import Agent, Credential
@@ -53,11 +53,11 @@ print(f"Delegated credential is valid: {is_valid}")
 
 ### Decentralized Identifiers (DIDs)
 
-Akta uses DIDs to provide cryptographically verifiable identities for agents. Each agent has a unique DID that can be used to verify the authenticity of credentials.
+AKTA uses DIDs to provide cryptographically verifiable identities for agents. Each agent has a unique DID that can be used to verify the authenticity of credentials.
 
 ### Verifiable Credentials
 
-Credentials in Akta represent capabilities that an agent has been granted. They contain:
+Credentials in AKTA represent capabilities that an agent has been granted. They contain:
 
 - **Issuer**: The DID of the entity issuing the credential
 - **Subject**: The DID of the entity receiving the credential
@@ -86,7 +86,7 @@ Agents can delegate a subset of their capabilities to other agents. The delegati
 
 ### Capability-based Security
 
-Akta uses capability-based security principles, where:
+AKTA uses capability-based security principles, where:
 
 - Capabilities are unforgeable tokens of authority
 - Possession of a capability is necessary and sufficient for access

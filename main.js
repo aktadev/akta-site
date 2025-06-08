@@ -10,7 +10,7 @@ function initTheme() {
   // Check for saved theme preference or use device preference
   const savedTheme = localStorage.getItem('theme');
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  
+
   if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
     applyTheme('dark');
   } else {
@@ -48,14 +48,14 @@ function toggleTheme() {
 function toggleMobileMenu() {
   const mobileMenu = document.createElement('div');
   mobileMenu.className = 'mobile-menu';
-  
+
   // If mobile menu already exists, toggle its visibility
   const existingMenu = document.querySelector('.mobile-menu');
   if (existingMenu) {
     existingMenu.classList.toggle('active');
     return;
   }
-  
+
   // Create mobile menu structure
   mobileMenu.innerHTML = `
     <div class="mobile-menu-links">
@@ -75,13 +75,13 @@ function toggleMobileMenu() {
       </button>
     </div>
   `;
-  
+
   // Append menu to body
   body.appendChild(mobileMenu);
-  
+
   // Add active class to show menu
   mobileMenu.classList.add('active');
-  
+
   // Add event listeners for menu items
   const menuLinks = mobileMenu.querySelectorAll('a');
   menuLinks.forEach(link => {
@@ -89,14 +89,14 @@ function toggleMobileMenu() {
       mobileMenu.classList.remove('active');
     });
   });
-  
+
   // Mobile theme toggle
   const mobileThemeToggle = document.getElementById('mobile-theme-toggle');
   mobileThemeToggle.addEventListener('click', () => {
     toggleTheme();
     updateMobileThemeButton();
   });
-  
+
   updateMobileThemeButton();
 }
 
@@ -118,7 +118,7 @@ function handleScrollAnimation() {
     const sectionTop = section.getBoundingClientRect().top;
     const windowHeight = window.innerHeight;
     const triggerPoint = windowHeight * 0.75;
-    
+
     if (sectionTop < triggerPoint) {
       section.classList.add('visible');
     }
@@ -131,12 +131,12 @@ function handleParallaxEffect() {
   const heroContent = document.querySelector('.hero-content');
   const heroShape = document.querySelector('.hero-shape');
   const scrollY = window.scrollY;
-  
+
   if (hero && heroContent && heroShape) {
     const heroHeight = hero.offsetHeight;
     const heroContentTranslate = scrollY * 0.4;
     const heroShapeTranslate = scrollY * 0.2;
-    
+
     if (scrollY < heroHeight) {
       heroContent.style.transform = `translateY(${heroContentTranslate}px)`;
       heroShape.style.transform = `translateY(${heroShapeTranslate}px)`;
@@ -147,7 +147,7 @@ function handleParallaxEffect() {
 // Card hover effects
 function initCardHoverEffects() {
   const cards = document.querySelectorAll('.concept-card, .use-case-card, .feature-card, .contribute-card, .involved-option');
-  
+
   cards.forEach(card => {
     card.addEventListener('mouseenter', (e) => {
       const cardRect = card.getBoundingClientRect();
@@ -155,14 +155,14 @@ function initCardHoverEffects() {
       const cardCenterY = cardRect.top + cardRect.height / 2;
       const mouseX = e.clientX;
       const mouseY = e.clientY;
-      
+
       // Calculate angle based on mouse position relative to card center
       const angleX = (mouseY - cardCenterY) / 20;
       const angleY = (cardCenterX - mouseX) / 20;
-      
+
       card.style.transform = `rotateX(${angleX}deg) rotateY(${angleY}deg) translateY(-10px)`;
     });
-    
+
     card.addEventListener('mouseleave', () => {
       card.style.transform = 'rotateX(0) rotateY(0) translateY(0)';
     });
@@ -173,7 +173,7 @@ function initCardHoverEffects() {
 function handleStickyHeader() {
   const header = document.querySelector('header');
   const scrollY = window.scrollY;
-  
+
   if (scrollY > 0) {
     header.classList.add('sticky');
   } else {
@@ -185,7 +185,7 @@ function handleStickyHeader() {
 function handleScrollIndicator() {
   const scrollIndicator = document.querySelector('.scroll-indicator');
   const scrollY = window.scrollY;
-  
+
   if (scrollIndicator) {
     if (scrollY > 100) {
       scrollIndicator.style.opacity = '0';
@@ -204,51 +204,51 @@ function initCustomCursor() {
 function initTrustChainAnimation() {
   const nodes = document.querySelectorAll('.node');
   const dataParticles = document.querySelectorAll('.data-particle');
-  
+
   // Update data-particle colors based on theme
   function updateParticleColors() {
     const theme = document.body.getAttribute('data-theme') || 'light';
     const particleColor = theme === 'dark' ? '#ffffff' : '#000000';
-    
+
     dataParticles.forEach(particle => {
       particle.style.backgroundColor = particleColor;
     });
   }
-  
+
   // Call once on init
   updateParticleColors();
-  
+
   // Update colors when theme changes
   themeToggleBtn.addEventListener('click', () => {
     setTimeout(updateParticleColors, 100); // Short delay to ensure theme has changed
   });
-  
+
   // Randomly activate nodes to simulate data exchange
   function activateRandomNode() {
     // Deactivate all nodes first
     nodes.forEach(node => node.classList.remove('active-node'));
-    
+
     // Choose a random node to activate
     const randomIndex = Math.floor(Math.random() * nodes.length);
     nodes[randomIndex].classList.add('active-node');
-    
+
     // Simulate data transmission to connected nodes
     setTimeout(() => {
       // Find adjacent nodes based on network topology
       const connectedNodes = getConnectedNodes(randomIndex);
-      
+
       // Activate connected nodes
       connectedNodes.forEach(nodeIndex => {
         nodes[nodeIndex].classList.add('active-node');
       });
     }, 300);
   }
-  
+
   // Define which nodes are connected to each other - updated for expanded network
   function getConnectedNodes(nodeIndex) {
     const connections = [
       [1, 2, 7, 8, 11],  // node 0 (node-1) connects to key nodes
-      [0, 2, 3, 7],      // node 1 (node-2) 
+      [0, 2, 3, 7],      // node 1 (node-2)
       [0, 1, 4, 8],      // node 2 (node-3)
       [1, 5, 9],         // node 3 (node-4)
       [2, 6, 10],        // node 4 (node-5)
@@ -260,16 +260,16 @@ function initTrustChainAnimation() {
       [4, 6, 8, 11],     // node 10 (node-11)
       [0, 5, 6, 9, 10]   // node 11 (node-12) connects to multiple nodes
     ];
-    
+
     return connections[nodeIndex] || [];
   }
-  
+
   // Initialize D3 connections
   initD3Connections();
-  
+
   // Start the animation sequence
   setInterval(activateRandomNode, 3000);
-  
+
   // Initialize with a first activation
   setTimeout(activateRandomNode, 1000);
 }
@@ -281,30 +281,30 @@ function initD3Connections() {
   const svg = d3.select('#connections-svg');
   const trustChain = document.querySelector('.trust-chain');
   const trustChainRect = trustChain.getBoundingClientRect();
-  
+
   // Create the AKTA robot with advanced design
   if (!document.querySelector('.akta-robot')) {
     const robot = document.createElement('div');
     robot.className = 'akta-robot';
-    
+
     // Create content container for better positioning
     const content = document.createElement('div');
     content.className = 'akta-robot-content';
-    
+
     // Use a more distinctive robot icon
     content.innerHTML = '<i class="fas fa-user-astronaut"></i>';
-    
+
     robot.appendChild(content);
     trustChain.appendChild(robot);
   }
-  
+
   // Clear any existing content
   svg.selectAll("*").remove();
-  
+
   // Create data structures for D3 force simulation
   const nodeData = Array.from(nodeElements).map(node => {
     const rect = node.getBoundingClientRect();
-    
+
     return {
       id: node.getAttribute('data-node-id'),
       x: rect.left - trustChainRect.left + rect.width/2,
@@ -316,7 +316,7 @@ function initD3Connections() {
       fy: null  // Fixed position y (used during dragging)
     };
   });
-  
+
   // Define connections (which nodes should be connected)
   const linkData = [
     // Original connections
@@ -329,7 +329,7 @@ function initD3Connections() {
     {source: "6", target: "12"}, // Bottom Left to Bottom
     {source: "7", target: "12"}, // Bottom Right to Bottom
     {source: "1", target: "12"}, // Top to Bottom (vertical)
-    
+
     // Additional connections for new nodes
     {source: "1", target: "8"}, // Top to Upper Left Corner
     {source: "1", target: "9"}, // Top to Upper Right Corner
@@ -341,33 +341,33 @@ function initD3Connections() {
     {source: "11", target: "7"}, // Lower Right Corner to Bottom Right
     {source: "10", target: "12"}, // Lower Left Corner to Bottom
     {source: "11", target: "12"}, // Lower Right Corner to Bottom
-    
+
     // Cross connections
     {source: "2", target: "3"}, // Upper Left to Upper Right
     {source: "4", target: "5"}, // Left Middle to Right Middle
     {source: "6", target: "7"}, // Bottom Left to Bottom Right
     {source: "8", target: "9"}, // Upper Left Corner to Upper Right Corner
     {source: "10", target: "11"}, // Lower Left Corner to Lower Right Corner
-    
+
     // Diagonal connections
     {source: "2", target: "5"}, // Upper Left to Right Middle
     {source: "3", target: "4"}, // Upper Right to Left Middle
     {source: "8", target: "11"}, // Upper Left Corner to Lower Right Corner
     {source: "9", target: "10"} // Upper Right Corner to Lower Left Corner
   ];
-  
+
   // Create a node lookup map
   const nodeById = {};
   nodeData.forEach(node => {
     nodeById[node.id] = node;
   });
-  
+
   // Transform the link data to use the actual node objects
   const links = linkData.map(link => ({
     source: nodeById[link.source],
     target: nodeById[link.target]
   }));
-  
+
   // Create the D3 force simulation
   const simulation = d3.forceSimulation(nodeData)
     .force("link", d3.forceLink(links).distance(120).strength(0.15))
@@ -410,7 +410,7 @@ function initD3Connections() {
     }).strength(0.1))
     .alphaTarget(0)
     .alphaDecay(0.05);
-  
+
   // Create SVG elements for the links
   const link = svg.selectAll(".connection-line")
     .data(links)
@@ -418,10 +418,10 @@ function initD3Connections() {
     .append("line")
     .attr("class", "connection-line")
     .attr("stroke-width", 2);
-  
+
   // Create data particle animations with manual animation
   const envelopes = [];
-  
+
   // Create envelope animation - just one per connection
   links.forEach((link, index) => {
     // Create one envelope per link
@@ -433,7 +433,7 @@ function initD3Connections() {
       .attr("font-size", "10px")
       .attr("opacity", 0)
       .text("\uf0e0"); // FontAwesome envelope icon
-    
+
     // Add to our tracking array with animation properties
     envelopes.push({
       element: envelope,
@@ -444,20 +444,20 @@ function initD3Connections() {
       delay: index * 500 // Stagger the animations
     });
   });
-  
+
   // Animation timer for smooth animations
   let lastTimestamp = 0;
   function animateEnvelopes(timestamp) {
     // Calculate time delta for smooth animation regardless of frame rate
     const delta = lastTimestamp ? timestamp - lastTimestamp : 0;
     lastTimestamp = timestamp;
-    
+
     // Update each envelope
     envelopes.forEach(env => {
       // Only start after delay
       env.delay -= delta;
       if (env.delay > 0) return;
-      
+
       // Update progress (loop from 0 to 1)
       env.progress += env.speed * delta;
       if (env.progress > 1) {
@@ -469,21 +469,21 @@ function initD3Connections() {
         env.element.attr("opacity", 0);
         return;
       }
-      
+
       // Calculate current position along the path
       const currentX = env.source.x + (env.target.x - env.source.x) * env.progress;
       const currentY = env.source.y + (env.target.y - env.source.y) * env.progress;
-      
+
       // Calculate angle for rotation
       const dx = env.target.x - env.source.x;
       const dy = env.target.y - env.source.y;
       const angle = Math.atan2(dy, dx) * 180 / Math.PI;
-      
+
       // Full opacity in the middle, fade at ends
       let opacity = 1;
       if (env.progress < 0.1) opacity = env.progress * 10; // Fade in
       else if (env.progress > 0.9) opacity = (1 - env.progress) * 10; // Fade out
-      
+
       // Update envelope position and rotation
       env.element
         .attr("x", currentX)
@@ -491,14 +491,14 @@ function initD3Connections() {
         .attr("opacity", opacity)
         .attr("transform", `rotate(${angle}, ${currentX}, ${currentY})`);
     });
-    
+
     // Continue animation loop
     requestAnimationFrame(animateEnvelopes);
   }
-  
+
       // Start animation loop
   requestAnimationFrame(animateEnvelopes);
-  
+
   // Initialize robot animation
   initRobotAnimation();
 
@@ -507,75 +507,75 @@ function initD3Connections() {
     let isDragging = false;
     const nodeId = element.getAttribute('data-node-id');
     const node = nodeById[nodeId];
-    
+
     // Mouse/touch down event to start dragging
     element.addEventListener('mousedown', startDrag);
     element.addEventListener('touchstart', e => {
       e.preventDefault();
       startDrag(e.touches[0]);
     });
-    
+
     function startDrag(e) {
       isDragging = true;
       simulation.alphaTarget(0.3).restart();
-      
+
       // Fix the node position during drag
       node.fx = node.x;
       node.fy = node.y;
-      
+
       // Add active class for styling
       element.classList.add('active-node');
-      
+
       // Prevent default behavior
       e.preventDefault();
     }
-    
+
     // Mouse/touch move event to update position
     document.addEventListener('mousemove', moveElement);
     document.addEventListener('touchmove', e => {
       if (isDragging) e.preventDefault();
       moveElement(e.touches[0]);
     });
-    
+
     function moveElement(e) {
       if (!isDragging) return;
-      
+
       // Get mouse/touch position relative to the trust chain container
       const rect = trustChain.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
-      
+
       // Update the fixed position
       node.fx = Math.max(25, Math.min(trustChainRect.width - 25, x));
       node.fy = Math.max(25, Math.min(trustChainRect.height - 25, y));
-      
+
       // Restart the simulation
       simulation.alpha(0.3).restart();
     }
-    
+
     // Mouse/touch up event to stop dragging
     document.addEventListener('mouseup', endDrag);
     document.addEventListener('touchend', endDrag);
-    
+
     function endDrag() {
       if (!isDragging) return;
-      
+
       isDragging = false;
-      
+
       // Release the fixed position for elastic rebound
       node.fx = null;
       node.fy = null;
-      
+
       // Remove active class
       element.classList.remove('active-node');
-      
+
       // Let simulation continue with reduced energy
       simulation.alphaTarget(0);
     }
   });
-  
+
   // Drag handlers are now implemented directly on DOM elements
-  
+
   // Simulation tick function - updates positions of everything
   simulation.on("tick", () => {
     // Update link positions
@@ -584,7 +584,7 @@ function initD3Connections() {
       .attr("y1", d => d.source.y)
       .attr("x2", d => d.target.x)
       .attr("y2", d => d.target.y);
-    
+
     // Update HTML node positions
     nodeData.forEach(node => {
       const element = node.element;
@@ -596,7 +596,7 @@ function initD3Connections() {
       element.style.bottom = 'auto';
     });
   });
-  
+
   // Add a resize handler
   window.addEventListener('resize', () => {
     // Recalculate positions on resize
@@ -604,7 +604,7 @@ function initD3Connections() {
     simulation.force("center", d3.forceCenter(newRect.width / 2, newRect.height / 2));
     simulation.alpha(0.3).restart();
   });
-  
+
   // Initialize node positions and start simulation
   nodeData.forEach(node => {
     // Set initial positions based on CSS
@@ -613,10 +613,10 @@ function initD3Connections() {
     node.x = rect.left - trustChainRect.left + rect.width/2;
     node.y = rect.top - trustChainRect.top + rect.height/2;
   });
-  
+
   // Start simulation with high alpha for initial arrangement
   simulation.alpha(1).restart();
-  
+
   // Robot Animation Functions
   function initRobotAnimation() {
     const robot = document.querySelector('.akta-robot');
@@ -627,10 +627,10 @@ function initD3Connections() {
     let targetX = currentX;
     let targetY = currentY;
     let shootTimeout = null;
-    
+
          // Position the robot initially
      updateRobotPosition(currentX, currentY);
-     
+
      // Function to choose a random node as target
      function selectRandomTarget() {
        const availableNodes = Array.from(nodeElements);
@@ -638,31 +638,31 @@ function initD3Connections() {
        const nodeRect = targetNode.getBoundingClientRect();
        targetX = nodeRect.left - trustChainRect.left + nodeRect.width/2;
        targetY = nodeRect.top - trustChainRect.top + nodeRect.height/2;
-       
+
        // Add some randomness to target position for more natural movement
        targetX += (Math.random() - 0.5) * 30;
        targetY += (Math.random() - 0.5) * 30;
-       
+
        // Rotate robot to face target with slight delay for smoother motion
        setTimeout(() => {
          const angle = Math.atan2(targetY - currentY, targetX - currentX) * 180 / Math.PI;
          robot.style.transform = `rotate(${angle}deg)`;
        }, 100);
      }
-     
+
      // Function to update robot position with easing
      function updateRobotPosition(x, y) {
        robot.style.left = `${x - 30}px`; // 30 is half the robot width (60px)
        robot.style.top = `${y - 30}px`;
      }
-     
+
      // Track active animations to limit concurrent animations
      let activeAnimationCount = 0;
      const MAX_CONCURRENT_ANIMATIONS = 3;
      let lastFrameTime = 0;
      let frameCount = 0;
      let throttleFactor = 1;
-     
+
      // Function to move the robot towards target
      function moveRobot(timestamp) {
        // Calculate frame time for adaptive throttling
@@ -679,16 +679,16 @@ function initD3Connections() {
        }
        lastFrameTime = timestamp;
        frameCount++;
-       
+
        // Calculate distance to target
        const dx = targetX - currentX;
        const dy = targetY - currentY;
        const distance = Math.sqrt(dx * dx + dy * dy);
-       
+
        // Calculate angle for rotation
        const angle = Math.atan2(dy, dx) * 180 / Math.PI;
        robot.style.transform = `rotate(${angle}deg)`;
-       
+
        // If close to target, shoot and select new target
        if (distance < 40) {
          // Only shoot if we're not over the animation limit
@@ -696,7 +696,7 @@ function initD3Connections() {
            // Stop briefly and shoot
            setTimeout(() => {
              shootPadlock();
-             
+
              // Wait a moment before choosing new target
              setTimeout(selectRandomTarget, 1200 * throttleFactor); // Longer delay when throttling
            }, 200);
@@ -704,7 +704,7 @@ function initD3Connections() {
            // Skip shooting and just select a new target
            setTimeout(selectRandomTarget, 500);
          }
-         
+
          // Add small random movement while waiting
          currentX += (Math.random() - 0.5) * 2;
          currentY += (Math.random() - 0.5) * 2;
@@ -712,19 +712,19 @@ function initD3Connections() {
        } else {
          // Calculate speed based on distance (faster when further)
          const speed = Math.min(0.05, Math.max(0.01, distance / 2000));
-         
+
          // Move towards target with easing
          currentX += dx * speed;
          currentY += dy * speed;
-         
+
          // Add slight wobble (reduced)
          if (frameCount % 3 === 0) { // Only apply wobble every 3 frames
            currentX += (Math.random() - 0.5) * 0.4;
            currentY += (Math.random() - 0.5) * 0.4;
          }
-         
+
          updateRobotPosition(currentX, currentY);
-         
+
          // Occasionally shoot while moving (much less frequently)
          if (!shootTimeout && Math.random() < 0.001 && activeAnimationCount < MAX_CONCURRENT_ANIMATIONS) {
            shootTimeout = setTimeout(() => {
@@ -733,11 +733,11 @@ function initD3Connections() {
            }, 300);
          }
        }
-       
+
        // Continue animation
        requestAnimationFrame(moveRobot);
      }
-    
+
          // Function to create and animate a padlock
      function shootPadlock() {
        // Track active animations
@@ -746,7 +746,7 @@ function initD3Connections() {
          activeAnimationCount--;
          return; // Skip animation if too many active
        }
-       
+
        // Create a padlock element
        const padlock = document.createElement('div');
        padlock.className = 'padlock';
@@ -754,100 +754,100 @@ function initD3Connections() {
        padlock.style.left = `${currentX - 15}px`; // 15 is half the padlock width
        padlock.style.top = `${currentY - 15}px`;
        trustChain.appendChild(padlock);
-       
+
        // Play an enhanced transform on the robot when shooting
        const rotationAngle = Math.atan2(targetY - currentY, targetX - currentX) * 180 / Math.PI;
        robot.style.transform = `rotate(${rotationAngle}deg) scale(1.2)`;
-       
+
        // Create a flash effect when shooting
        const robotContent = robot.querySelector('.akta-robot-content');
        if (robotContent) {
          robotContent.style.filter = 'brightness(1.5)';
        }
-       
+
        setTimeout(() => {
          robot.style.transform = `rotate(${rotationAngle}deg) scale(1)`;
          if (robotContent) {
            robotContent.style.filter = '';
          }
        }, 200);
-       
+
        // Calculate trajectory
        const nodeRect = targetNode.getBoundingClientRect();
        const targetNodeX = nodeRect.left - trustChainRect.left + nodeRect.width/2;
        const targetNodeY = nodeRect.top - trustChainRect.top + nodeRect.height/2;
        const angle = Math.atan2(targetNodeY - currentY, targetNodeX - currentX);
-       
+
        // Add slight arc to trajectory (reduced arc height)
        const arcHeight = Math.random() * 20 + 10;
-       
+
        // Pre-calculate distance and other constants
        const distance = Math.sqrt(
-         Math.pow(targetNodeX - currentX, 2) + 
+         Math.pow(targetNodeX - currentX, 2) +
          Math.pow(targetNodeY - currentY, 2)
        );
-       
+
        // Use animation frames more efficiently with time steps
        let lastTimestamp = 0;
        let progress = 0;
        const speed = 0.08; // Faster animation to reduce active time
-       
+
        const animatePadlock = (timestamp) => {
          // Use time delta for smooth animation regardless of frame rate
          const delta = lastTimestamp ? (timestamp - lastTimestamp) / 1000 : 0.016; // 16ms default if first frame
          lastTimestamp = timestamp;
-         
+
          // Increment progress based on time delta and speed
          progress += speed * delta * 60; // normalize to 60fps
-         
+
          if (progress >= 1) {
            // Remove padlock and cleanup
            padlock.remove();
-           
+
            // Flash the node
            targetNode.classList.add('node-flash');
-           
+
            // Add a simple transform
            targetNode.style.transform = 'scale(1.2)';
            setTimeout(() => {
              targetNode.style.transform = '';
            }, 150);
-           
+
            setTimeout(() => {
              targetNode.classList.remove('node-flash');
            }, 500);
-           
+
            // Create simplified burst effect
            createBurstEffect(targetNodeX, targetNodeY);
-           
+
            // Decrement active animations
            activeAnimationCount--;
            return;
          }
-         
+
          // Calculate current position with arc (more efficient calculation)
          const currentDistance = distance * progress;
          const arcOffset = Math.sin(progress * Math.PI) * arcHeight;
-         
+
          const x = currentX + Math.cos(angle) * currentDistance;
          const y = currentY + Math.sin(angle) * currentDistance - arcOffset;
-         
+
          // Update padlock position
          padlock.style.left = `${x - 15}px`;
          padlock.style.top = `${y - 15}px`;
-         
+
          // Simpler rotation logic
          const rotationAngle = angle * 180 / Math.PI + (progress * 360); // Half as many rotations
          padlock.style.transform = `rotate(${rotationAngle}deg) scale(${1 + progress * 0.3})`;
-         
+
          // Continue animation
          requestAnimationFrame(animatePadlock);
        };
-       
+
        // Start animation
        requestAnimationFrame(animatePadlock);
      }
-     
+
      // Create a simplified burst effect when padlock hits a node
      function createBurstEffect(x, y) {
        // Create fewer particles (4 instead of 8)
@@ -861,25 +861,25 @@ function initD3Connections() {
          particle.style.left = `${x - 5}px`;
          particle.style.top = `${y - 5}px`;
          trustChain.appendChild(particle);
-         
+
          // Calculate particle angle
          const angle = (i / 4) * Math.PI * 2;
-         
+
          // Use CSS animations for particles instead of JS animation
          const distance = 40; // Fixed distance
          const particleX = x + Math.cos(angle) * distance;
          const particleY = y + Math.sin(angle) * distance;
-         
+
          // Set up CSS transition
          particle.style.transition = 'all 0.5s ease-out';
-         
+
          // Trigger animation in next frame
          setTimeout(() => {
            particle.style.left = `${particleX - 5}px`;
            particle.style.top = `${particleY - 5}px`;
            particle.style.opacity = '0';
            particle.style.transform = 'scale(0.5)';
-           
+
            // Remove after animation completes
            setTimeout(() => {
              particle.remove();
@@ -887,7 +887,7 @@ function initD3Connections() {
          }, 10);
        }
      }
-    
+
     // Start the robot animation with initial target
     selectRandomTarget();
     moveRobot();
@@ -904,20 +904,20 @@ window.addEventListener('resize', function() {
 window.addEventListener('DOMContentLoaded', () => {
   // Initialize theme
   initTheme();
-  
+
   // Event listeners
   themeToggleBtn.addEventListener('click', toggleTheme);
   mobileMenuBtn.addEventListener('click', toggleMobileMenu);
-  
+
   // Initialize scroll animations
   handleScrollAnimation();
-  
+
   // Add 3D card effects on desktop
   if (window.innerWidth > 992) {
     initCardHoverEffects();
     initCustomCursor();
   }
-  
+
   // Add scroll event listeners
   window.addEventListener('scroll', () => {
     handleScrollAnimation();
@@ -925,25 +925,25 @@ window.addEventListener('DOMContentLoaded', () => {
     handleParallaxEffect();
     handleScrollIndicator();
   });
-  
+
   // Show hero section immediately
   document.querySelector('.hero-section').classList.add('animate-fade-in');
-  
+
   // Close mobile menu when clicking outside
   document.addEventListener('click', (e) => {
     const mobileMenu = document.querySelector('.mobile-menu');
     const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-    
-    if (mobileMenu && mobileMenu.classList.contains('active') && 
+
+    if (mobileMenu && mobileMenu.classList.contains('active') &&
         !mobileMenu.contains(e.target) && e.target !== mobileMenuBtn) {
       mobileMenu.classList.remove('active');
     }
   });
-  
+
   // Initialize trust chain animation with a slight delay to ensure nodes are positioned
   setTimeout(() => {
     initTrustChainAnimation();
-    
+
     // Initialize D3 connections with physics simulation
     setTimeout(() => {
       initD3Connections();
@@ -951,7 +951,7 @@ window.addEventListener('DOMContentLoaded', () => {
       document.querySelector('.trust-chain').classList.add('initialized');
     }, 300);
   }, 500);
-  
+
   // Listen for theme changes to update connections
   themeToggleBtn.addEventListener('click', () => {
     // Reconnect after theme change
@@ -959,4 +959,4 @@ window.addEventListener('DOMContentLoaded', () => {
       initD3Connections();
     }, 200);
   });
-}); 
+});
