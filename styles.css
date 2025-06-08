@@ -809,6 +809,16 @@ nav {
   font-size: 1.125rem;
 }
 
+/* Reduce spacing between paragraphs in Get Involved section */
+#get-involved > .container > p {
+  margin-bottom: 1rem;
+}
+
+/* Add icon spacing */
+#get-involved > .container > p i {
+  margin-right: 8px;
+}
+
 .alt-bg {
   background-color: var(--alt-bg-color);
 }
