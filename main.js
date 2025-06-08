@@ -403,52 +403,79 @@ function initD3Connections() {
     setTimeout(animateEnvelope, 500 + index * 200);
   });
   
-  // Add drag behavior to nodes
-  const drag = d3.drag()
-    .on("start", dragStarted)
-    .on("drag", dragging)
-    .on("end", dragEnded);
-  
-  // Apply drag behavior to HTML node elements
+  // Implement manual drag handling for direct DOM elements
   nodeElements.forEach(element => {
-    d3.select(element).call(drag);
+    let isDragging = false;
+    const nodeId = element.getAttribute('data-node-id');
+    const node = nodeById[nodeId];
+    
+    // Mouse/touch down event to start dragging
+    element.addEventListener('mousedown', startDrag);
+    element.addEventListener('touchstart', e => {
+      e.preventDefault();
+      startDrag(e.touches[0]);
+    });
+    
+    function startDrag(e) {
+      isDragging = true;
+      simulation.alphaTarget(0.3).restart();
+      
+      // Fix the node position during drag
+      node.fx = node.x;
+      node.fy = node.y;
+      
+      // Add active class for styling
+      element.classList.add('active-node');
+      
+      // Prevent default behavior
+      e.preventDefault();
+    }
+    
+    // Mouse/touch move event to update position
+    document.addEventListener('mousemove', moveElement);
+    document.addEventListener('touchmove', e => {
+      if (isDragging) e.preventDefault();
+      moveElement(e.touches[0]);
+    });
+    
+    function moveElement(e) {
+      if (!isDragging) return;
+      
+      // Get mouse/touch position relative to the trust chain container
+      const rect = trustChain.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      // Update the fixed position
+      node.fx = Math.max(25, Math.min(trustChainRect.width - 25, x));
+      node.fy = Math.max(25, Math.min(trustChainRect.height - 25, y));
+      
+      // Restart the simulation
+      simulation.alpha(0.3).restart();
+    }
+    
+    // Mouse/touch up event to stop dragging
+    document.addEventListener('mouseup', endDrag);
+    document.addEventListener('touchend', endDrag);
+    
+    function endDrag() {
+      if (!isDragging) return;
+      
+      isDragging = false;
+      
+      // Release the fixed position for elastic rebound
+      node.fx = null;
+      node.fy = null;
+      
+      // Remove active class
+      element.classList.remove('active-node');
+      
+      // Let simulation continue with reduced energy
+      simulation.alphaTarget(0);
+    }
   });
   
-  // Drag event handlers
-  function dragStarted(event) {
-    if (!event.active) simulation.alphaTarget(0.3).restart();
-    const nodeId = event.target.getAttribute('data-node-id');
-    const node = nodeById[nodeId];
-    
-    // Fix the node position during drag
-    node.fx = node.x;
-    node.fy = node.y;
-    
-    // Add visual feedback
-    event.target.classList.add('active-node');
-  }
-  
-  function dragging(event) {
-    const nodeId = event.target.getAttribute('data-node-id');
-    const node = nodeById[nodeId];
-    
-    // Update the fixed position
-    node.fx = Math.max(25, Math.min(trustChainRect.width - 25, event.x));
-    node.fy = Math.max(25, Math.min(trustChainRect.height - 25, event.y));
-  }
-  
-  function dragEnded(event) {
-    if (!event.active) simulation.alphaTarget(0);
-    const nodeId = event.target.getAttribute('data-node-id');
-    const node = nodeById[nodeId];
-    
-    // Release the fixed position for elastic rebound
-    node.fx = null;
-    node.fy = null;
-    
-    // Remove visual feedback
-    event.target.classList.remove('active-node');
-  }
+  // Drag handlers are now implemented directly on DOM elements
   
   // Simulation tick function - updates positions of everything
   simulation.on("tick", () => {
