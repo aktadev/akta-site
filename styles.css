@@ -509,23 +509,25 @@ nav {
   position: absolute;
   width: 60px;
   height: 60px;
-  background: #FFD700; /* Gold background */
+  background: #FFFFFF; /* White background in light mode */
   border-radius: 50%;
   z-index: 15;
   display: flex;
   align-items: center;
   justify-content: center;
-  filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.8));
+  filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.8));
   pointer-events: none;
   transition: transform 0.2s ease;
-  border: 3px solid #fff;
+  border: 3px solid #ddd;
   overflow: visible; /* Allow text to overflow */
-  box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
 }
 
 [data-theme="dark"] .akta-robot {
-  filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.8));
-  border: 3px solid #000;
+  background: #000000; /* Black background in dark mode */
+  filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.8));
+  border: 3px solid #333;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
 }
 
 .akta-robot-content {
@@ -539,7 +541,7 @@ nav {
 }
 
 .akta-robot i {
-  color: #000;
+  color: #333; /* Dark icon on white background */
   font-size: 30px;
   animation: robotPulse 1.5s infinite alternate;
   position: relative;
@@ -547,41 +549,44 @@ nav {
 }
 
 [data-theme="dark"] .akta-robot i {
-  color: #000;
+  color: #fff; /* White icon on black background */
 }
 
-/* AKTA Text */
+/* AKTA BOT Text */
 .akta-robot::before {
-  content: 'AKTA';
+  content: 'AKTA BOT';
   position: absolute;
   bottom: -20px;
   left: 50%;
   transform: translateX(-50%);
-  background: #FFD700;
-  color: #000;
+  background: #FFFFFF;
+  color: #000000;
   font-weight: bold;
   font-size: 14px;
   padding: 2px 8px;
   border-radius: 10px;
   letter-spacing: 1px;
   white-space: nowrap;
-  border: 2px solid #fff;
-  box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+  border: 2px solid #ddd;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
   z-index: 3;
 }
 
 [data-theme="dark"] .akta-robot::before {
-  border: 2px solid #000;
+  background: #000000;
+  color: #FFFFFF;
+  border: 2px solid #333;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
 }
 
 @keyframes robotPulse {
   0% {
     transform: scale(1);
-    text-shadow: 0 0 5px rgba(255, 215, 0, 0.8);
+    text-shadow: 0 0 5px rgba(100, 100, 100, 0.5);
   }
   100% {
     transform: scale(1.1);
-    text-shadow: 0 0 15px rgba(255, 215, 0, 1);
+    text-shadow: 0 0 15px rgba(100, 100, 100, 0.8);
   }
 }
 
@@ -592,10 +597,14 @@ nav {
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.9) 0%, rgba(255, 215, 0, 0) 70%);
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0) 70%);
   opacity: 0.4;
   pointer-events: none;
   border-radius: 50%;
+}
+
+[data-theme="dark"] .akta-robot::after {
+  background: radial-gradient(circle at center, rgba(100, 100, 100, 0.9) 0%, rgba(0, 0, 0, 0) 70%);
 }
 
 /* Padlock Animation */
@@ -672,7 +681,7 @@ nav {
     transform: scale(1);
   }
   50% {
-    color: gold;
+    color: rgb(255, 255, 255);
     transform: scale(1.3);
   }
   100% {
