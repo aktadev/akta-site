@@ -245,15 +245,21 @@ function initTrustChainAnimation() {
     }, 300);
   }
   
-  // Define which nodes are connected to each other - updated for X pattern
+  // Define which nodes are connected to each other - updated for expanded network
   function getConnectedNodes(nodeIndex) {
     const connections = [
-      [1, 2, 3, 4, 5],  // node 0 (node-1) connects to all other nodes in X pattern
-      [0, 3, 5],        // node 1 (node-2) connects to nodes 0, 3, and 5
-      [0, 4, 5],        // node 2 (node-3) connects to nodes 0, 4, and 5
-      [0, 1, 5],        // node 3 (node-4) connects to nodes 0, 1, and 5
-      [0, 2, 5],        // node 4 (node-5) connects to nodes 0, 2, and 5
-      [0, 1, 2, 3, 4]   // node 5 (node-6) connects to all other nodes in X pattern
+      [1, 2, 7, 8, 11],  // node 0 (node-1) connects to key nodes
+      [0, 2, 3, 7],      // node 1 (node-2) 
+      [0, 1, 4, 8],      // node 2 (node-3)
+      [1, 5, 9],         // node 3 (node-4)
+      [2, 6, 10],        // node 4 (node-5)
+      [3, 9, 11],        // node 5 (node-6)
+      [4, 10, 11],       // node 6 (node-7)
+      [0, 1, 8, 9],      // node 7 (node-8)
+      [0, 2, 7, 10],     // node 8 (node-9)
+      [3, 5, 7, 11],     // node 9 (node-10)
+      [4, 6, 8, 11],     // node 10 (node-11)
+      [0, 5, 6, 9, 10]   // node 11 (node-12) connects to multiple nodes
     ];
     
     return connections[nodeIndex] || [];
@@ -298,17 +304,41 @@ function initD3Connections() {
   
   // Define connections (which nodes should be connected)
   const linkData = [
-    {source: "1", target: "2"}, // Top to Left Middle
-    {source: "1", target: "3"}, // Top to Right Middle
-    {source: "2", target: "4"}, // Left Middle to Left Bottom
-    {source: "3", target: "5"}, // Right Middle to Right Bottom
-    {source: "4", target: "6"}, // Left Bottom to Bottom
-    {source: "5", target: "6"}, // Right Bottom to Bottom
-    {source: "1", target: "6"}, // Top to Bottom (vertical)
-    {source: "2", target: "3"}, // Left Middle to Right Middle
-    {source: "4", target: "5"}, // Left Bottom to Right Bottom
-    {source: "2", target: "5"}, // Diagonal Left Middle to Right Bottom
-    {source: "3", target: "4"}  // Diagonal Right Middle to Left Bottom
+    // Original connections
+    {source: "1", target: "2"}, // Top to Upper Left
+    {source: "1", target: "3"}, // Top to Upper Right
+    {source: "2", target: "4"}, // Upper Left to Left Middle
+    {source: "3", target: "5"}, // Upper Right to Right Middle
+    {source: "4", target: "6"}, // Left Middle to Bottom Left
+    {source: "5", target: "7"}, // Right Middle to Bottom Right
+    {source: "6", target: "12"}, // Bottom Left to Bottom
+    {source: "7", target: "12"}, // Bottom Right to Bottom
+    {source: "1", target: "12"}, // Top to Bottom (vertical)
+    
+    // Additional connections for new nodes
+    {source: "1", target: "8"}, // Top to Upper Left Corner
+    {source: "1", target: "9"}, // Top to Upper Right Corner
+    {source: "8", target: "2"}, // Upper Left Corner to Upper Left
+    {source: "9", target: "3"}, // Upper Right Corner to Upper Right
+    {source: "8", target: "10"}, // Upper Left Corner to Lower Left Corner
+    {source: "9", target: "11"}, // Upper Right Corner to Lower Right Corner
+    {source: "10", target: "6"}, // Lower Left Corner to Bottom Left
+    {source: "11", target: "7"}, // Lower Right Corner to Bottom Right
+    {source: "10", target: "12"}, // Lower Left Corner to Bottom
+    {source: "11", target: "12"}, // Lower Right Corner to Bottom
+    
+    // Cross connections
+    {source: "2", target: "3"}, // Upper Left to Upper Right
+    {source: "4", target: "5"}, // Left Middle to Right Middle
+    {source: "6", target: "7"}, // Bottom Left to Bottom Right
+    {source: "8", target: "9"}, // Upper Left Corner to Upper Right Corner
+    {source: "10", target: "11"}, // Lower Left Corner to Lower Right Corner
+    
+    // Diagonal connections
+    {source: "2", target: "5"}, // Upper Left to Right Middle
+    {source: "3", target: "4"}, // Upper Right to Left Middle
+    {source: "8", target: "11"}, // Upper Left Corner to Lower Right Corner
+    {source: "9", target: "10"} // Upper Right Corner to Lower Left Corner
   ];
   
   // Create a node lookup map
@@ -325,30 +355,42 @@ function initD3Connections() {
   
   // Create the D3 force simulation
   const simulation = d3.forceSimulation(nodeData)
-    .force("link", d3.forceLink(links).distance(100).strength(0.2))
-    .force("charge", d3.forceManyBody().strength(-100))
+    .force("link", d3.forceLink(links).distance(120).strength(0.15))
+    .force("charge", d3.forceManyBody().strength(-150))
     .force("center", d3.forceCenter(trustChainRect.width / 2, trustChainRect.height / 2))
-    .force("collide", d3.forceCollide().radius(40))
+    .force("collide", d3.forceCollide().radius(45))
     .force("x", d3.forceX(d => {
       // Target positions based on original layout
       const node = d.element;
       if (node.classList.contains('node-1')) return trustChainRect.width / 2;
       if (node.classList.contains('node-2')) return trustChainRect.width * 0.25;
       if (node.classList.contains('node-3')) return trustChainRect.width * 0.75;
-      if (node.classList.contains('node-4')) return trustChainRect.width * 0.25;
-      if (node.classList.contains('node-5')) return trustChainRect.width * 0.75;
-      if (node.classList.contains('node-6')) return trustChainRect.width / 2;
+      if (node.classList.contains('node-4')) return trustChainRect.width * 0.15;
+      if (node.classList.contains('node-5')) return trustChainRect.width * 0.85;
+      if (node.classList.contains('node-6')) return trustChainRect.width * 0.25;
+      if (node.classList.contains('node-7')) return trustChainRect.width * 0.75;
+      if (node.classList.contains('node-8')) return trustChainRect.width * 0.15;
+      if (node.classList.contains('node-9')) return trustChainRect.width * 0.85;
+      if (node.classList.contains('node-10')) return trustChainRect.width * 0.15;
+      if (node.classList.contains('node-11')) return trustChainRect.width * 0.85;
+      if (node.classList.contains('node-12')) return trustChainRect.width / 2;
       return trustChainRect.width / 2;
     }).strength(0.1))
     .force("y", d3.forceY(d => {
       // Target positions based on original layout
       const node = d.element;
-      if (node.classList.contains('node-1')) return 20 + 25;
-      if (node.classList.contains('node-2')) return 140 + 25;
-      if (node.classList.contains('node-3')) return 140 + 25;
-      if (node.classList.contains('node-4')) return trustChainRect.height - 140 - 25;
-      if (node.classList.contains('node-5')) return trustChainRect.height - 140 - 25;
-      if (node.classList.contains('node-6')) return trustChainRect.height - 20 - 25;
+      if (node.classList.contains('node-1')) return 40 + 25;
+      if (node.classList.contains('node-2')) return 120 + 25;
+      if (node.classList.contains('node-3')) return 120 + 25;
+      if (node.classList.contains('node-4')) return 250 + 25;
+      if (node.classList.contains('node-5')) return 250 + 25;
+      if (node.classList.contains('node-6')) return trustChainRect.height - 150 - 25;
+      if (node.classList.contains('node-7')) return trustChainRect.height - 150 - 25;
+      if (node.classList.contains('node-8')) return 180 + 25;
+      if (node.classList.contains('node-9')) return 180 + 25;
+      if (node.classList.contains('node-10')) return trustChainRect.height - 180 - 25;
+      if (node.classList.contains('node-11')) return trustChainRect.height - 180 - 25;
+      if (node.classList.contains('node-12')) return trustChainRect.height - 40 - 25;
       return trustChainRect.height / 2;
     }).strength(0.1))
     .alphaTarget(0)

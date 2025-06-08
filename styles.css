@@ -440,8 +440,8 @@ nav {
 /* Trust Chain Animation */
 .trust-chain {
   position: relative;
-  width: 400px;
-  height: 400px;
+  width: 600px;
+  height: 600px;
   display: block;
 }
 
@@ -510,7 +510,7 @@ nav {
 }
 
 /* Initial positioning - actual positions will be set by D3 force simulation */
-.node-1, .node-2, .node-3, .node-4, .node-5, .node-6 {
+.node-1, .node-2, .node-3, .node-4, .node-5, .node-6, .node-7, .node-8, .node-9, .node-10, .node-11, .node-12 {
   /* Force layout will handle positioning */
   opacity: 0;
   transition: opacity 0.5s ease;
