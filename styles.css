@@ -542,7 +542,7 @@ nav {
 
 .akta-robot i {
   color: #333; /* Dark icon on white background */
-  font-size: 30px;
+  font-size: 34px; /* Larger icon now that we don't have label */
   animation: robotPulse 1.5s infinite alternate;
   position: relative;
   z-index: 2;
@@ -552,32 +552,7 @@ nav {
   color: #fff; /* White icon on black background */
 }
 
-/* AKTA BOT Text */
-.akta-robot::before {
-  content: 'AKTA BOT';
-  position: absolute;
-  bottom: -20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #FFFFFF;
-  color: #000000;
-  font-weight: bold;
-  font-size: 14px;
-  padding: 2px 8px;
-  border-radius: 10px;
-  letter-spacing: 1px;
-  white-space: nowrap;
-  border: 2px solid #ddd;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
-  z-index: 3;
-}
-
-[data-theme="dark"] .akta-robot::before {
-  background: #000000;
-  color: #FFFFFF;
-  border: 2px solid #333;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
-}
+/* Robot has no text label anymore */
 
 @keyframes robotPulse {
   0% {
