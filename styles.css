@@ -1253,6 +1253,59 @@ nav {
   max-width: 200px;
 }
 
+/* Sigstore Section */
+.sigstore-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3rem;
+  padding: 2rem 0;
+}
+
+.sigstore-logo {
+  flex-shrink: 0;
+}
+
+.sigstore-icon {
+  width: 180px;
+  height: auto;
+  filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.1));
+  transition: transform 0.3s ease;
+}
+
+[data-theme="dark"] .sigstore-icon {
+  filter: invert(1) drop-shadow(0 5px 15px rgba(255, 255, 255, 0.1));
+}
+
+.sigstore-logo:hover .sigstore-icon {
+  transform: scale(1.05);
+}
+
+.sigstore-text {
+  max-width: 600px;
+}
+
+.sigstore-text h2 {
+  margin-bottom: 1rem;
+}
+
+.sigstore-text p {
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+  .sigstore-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 1.5rem;
+  }
+  
+  .sigstore-icon {
+    width: 140px;
+  }
+}
+
 /* Get Involved */
 .involved-options {
   display: grid;
