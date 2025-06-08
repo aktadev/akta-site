@@ -65,7 +65,6 @@ function toggleMobileMenu() {
       <a href="#delegation">Delegation</a>
       <a href="#use-cases">Use Cases</a>
       <a href="#features">Features</a>
-      <a href="#contributing">Contributing</a>
     </div>
     <div class="mobile-menu-actions">
       <a href="https://github.com/akta" target="_blank">
