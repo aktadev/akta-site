@@ -274,24 +274,30 @@ function initD3Connections() {
   // Get all the nodes
   const nodeElements = document.querySelectorAll('.node');
   const svg = d3.select('#connections-svg');
+  const trustChain = document.querySelector('.trust-chain');
+  const trustChainRect = trustChain.getBoundingClientRect();
   
-  // Calculate center point of each node
+  // Clear any existing content
+  svg.selectAll("*").remove();
+  
+  // Create data structures for D3 force simulation
   const nodeData = Array.from(nodeElements).map(node => {
     const rect = node.getBoundingClientRect();
-    const trustChain = document.querySelector('.trust-chain').getBoundingClientRect();
     
     return {
       id: node.getAttribute('data-node-id'),
-      x: rect.left - trustChain.left + rect.width/2,
-      y: rect.top - trustChain.top + rect.height/2,
+      x: rect.left - trustChainRect.left + rect.width/2,
+      y: rect.top - trustChainRect.top + rect.height/2,
       width: rect.width,
       height: rect.height,
-      element: node
+      element: node,
+      fx: null, // Fixed position x (used during dragging)
+      fy: null  // Fixed position y (used during dragging)
     };
   });
   
   // Define connections (which nodes should be connected)
-  const connections = [
+  const linkData = [
     {source: "1", target: "2"}, // Top to Left Middle
     {source: "1", target: "3"}, // Top to Right Middle
     {source: "2", target: "4"}, // Left Middle to Left Bottom
@@ -305,156 +311,185 @@ function initD3Connections() {
     {source: "3", target: "4"}  // Diagonal Right Middle to Left Bottom
   ];
   
-  // Clear existing connections
-  svg.selectAll("*").remove();
-  
-  // Create a map for quick node lookup
-  const nodeMap = {};
+  // Create a node lookup map
+  const nodeById = {};
   nodeData.forEach(node => {
-    nodeMap[node.id] = node;
+    nodeById[node.id] = node;
   });
   
-  // Add lines for connections
-  const lines = connections.map((connection, index) => {
-    const source = nodeMap[connection.source];
-    const target = nodeMap[connection.target];
-    
-    if (source && target) {
-      // Create line
-      const line = svg.append("line")
-        .attr("x1", source.x)
-        .attr("y1", source.y)
-        .attr("x2", target.x)
-        .attr("y2", target.y)
-        .attr("class", "connection-line")
-        .attr("id", `connection-${source.id}-${target.id}`);
-      
-      return {
-        element: line,
-        source: source,
-        target: target
-      };
-    }
-    return null;
-  }).filter(line => line !== null);
+  // Transform the link data to use the actual node objects
+  const links = linkData.map(link => ({
+    source: nodeById[link.source],
+    target: nodeById[link.target]
+  }));
   
-  // Create envelopes (instead of particles) for each connection
-  connections.forEach((connection, index) => {
-    const source = nodeMap[connection.source];
-    const target = nodeMap[connection.target];
+  // Create the D3 force simulation
+  const simulation = d3.forceSimulation(nodeData)
+    .force("link", d3.forceLink(links).distance(100).strength(0.2))
+    .force("charge", d3.forceManyBody().strength(-100))
+    .force("center", d3.forceCenter(trustChainRect.width / 2, trustChainRect.height / 2))
+    .force("collide", d3.forceCollide().radius(40))
+    .force("x", d3.forceX(d => {
+      // Target positions based on original layout
+      const node = d.element;
+      if (node.classList.contains('node-1')) return trustChainRect.width / 2;
+      if (node.classList.contains('node-2')) return trustChainRect.width * 0.25;
+      if (node.classList.contains('node-3')) return trustChainRect.width * 0.75;
+      if (node.classList.contains('node-4')) return trustChainRect.width * 0.25;
+      if (node.classList.contains('node-5')) return trustChainRect.width * 0.75;
+      if (node.classList.contains('node-6')) return trustChainRect.width / 2;
+      return trustChainRect.width / 2;
+    }).strength(0.1))
+    .force("y", d3.forceY(d => {
+      // Target positions based on original layout
+      const node = d.element;
+      if (node.classList.contains('node-1')) return 20 + 25;
+      if (node.classList.contains('node-2')) return 140 + 25;
+      if (node.classList.contains('node-3')) return 140 + 25;
+      if (node.classList.contains('node-4')) return trustChainRect.height - 140 - 25;
+      if (node.classList.contains('node-5')) return trustChainRect.height - 140 - 25;
+      if (node.classList.contains('node-6')) return trustChainRect.height - 20 - 25;
+      return trustChainRect.height / 2;
+    }).strength(0.1))
+    .alphaTarget(0)
+    .alphaDecay(0.05);
+  
+  // Create SVG elements for the links
+  const link = svg.selectAll(".connection-line")
+    .data(links)
+    .enter()
+    .append("line")
+    .attr("class", "connection-line")
+    .attr("stroke-width", 2);
+  
+  // Create data particle animations for each link
+  links.forEach((link, index) => {
+    // Create an envelope icon for the particle
+    const envelope = svg.append("text")
+      .attr("class", "data-particle")
+      .attr("text-anchor", "middle")
+      .attr("dominant-baseline", "middle")
+      .attr("font-family", "FontAwesome")
+      .attr("font-size", "10px")
+      .attr("opacity", 0)
+      .text("\uf0e0"); // FontAwesome envelope icon
     
-    if (source && target) {
-      // Create an envelope icon for the particle
-      const envelope = svg.append("text")
-        .attr("class", "data-particle")
-        .attr("x", source.x)
-        .attr("y", source.y)
-        .attr("text-anchor", "middle")
-        .attr("dominant-baseline", "middle")
-        .attr("font-family", "FontAwesome")
-        .attr("font-size", "10px")
-        .text("\uf0e0"); // FontAwesome envelope icon
-      
+    // Function to animate envelope along the path
+    function animateEnvelope() {
       // Calculate angle for proper envelope orientation
-      const dx = target.x - source.x;
-      const dy = target.y - source.y;
+      const dx = link.target.x - link.source.x;
+      const dy = link.target.y - link.source.y;
       const angle = Math.atan2(dy, dx) * 180 / Math.PI;
       
-      // Animate envelope along the path
-      function animateEnvelope() {
-        envelope
-          .attr("opacity", 0)
-          .attr("x", source.x)
-          .attr("y", source.y)
-          .attr("transform", `rotate(${angle}, ${source.x}, ${source.y})`)
-          .transition()
-          .duration(2000)
-          .delay(index * 300)
-          .attr("opacity", 1)
-          .attr("x", target.x)
-          .attr("y", target.y)
-          .attr("transform", `rotate(${angle}, ${target.x}, ${target.y})`)
-          .transition()
-          .duration(200)
-          .attr("opacity", 0)
-          .on("end", animateEnvelope);
-      }
-      
-      // Start animation
-      animateEnvelope();
+      envelope
+        .attr("opacity", 0)
+        .attr("x", link.source.x)
+        .attr("y", link.source.y)
+        .attr("transform", `rotate(${angle}, ${link.source.x}, ${link.source.y})`)
+        .transition()
+        .duration(2000)
+        .delay(index * 300)
+        .attr("opacity", 1)
+        .attr("x", link.target.x)
+        .attr("y", link.target.y)
+        .attr("transform", `rotate(${angle}, ${link.target.x}, ${link.target.y})`)
+        .transition()
+        .duration(200)
+        .attr("opacity", 0)
+        .on("end", animateEnvelope);
     }
+    
+    // Start animation after a short delay
+    setTimeout(animateEnvelope, 500 + index * 200);
   });
   
-  // Implement dragging functionality
-  nodeElements.forEach(node => {
-    let isDragging = false;
-    let offsetX, offsetY;
-    const nodeId = node.getAttribute('data-node-id');
-    const nodeData = nodeMap[nodeId];
+  // Add drag behavior to nodes
+  const drag = d3.drag()
+    .on("start", dragStarted)
+    .on("drag", dragging)
+    .on("end", dragEnded);
+  
+  // Apply drag behavior to HTML node elements
+  nodeElements.forEach(element => {
+    d3.select(element).call(drag);
+  });
+  
+  // Drag event handlers
+  function dragStarted(event) {
+    if (!event.active) simulation.alphaTarget(0.3).restart();
+    const nodeId = event.target.getAttribute('data-node-id');
+    const node = nodeById[nodeId];
     
-    // Mouse down event to start dragging
-    node.addEventListener('mousedown', function(e) {
-      isDragging = true;
-      
-      // Calculate offset from the center of the node
-      const rect = node.getBoundingClientRect();
-      offsetX = e.clientX - rect.left - rect.width / 2;
-      offsetY = e.clientY - rect.top - rect.height / 2;
-      
-      // Add active class for styling
-      node.classList.add('active-node');
-      
-      e.preventDefault();
-    });
+    // Fix the node position during drag
+    node.fx = node.x;
+    node.fy = node.y;
     
-    // Mouse move event to update position while dragging
-    document.addEventListener('mousemove', function(e) {
-      if (!isDragging) return;
-      
-      const trustChain = document.querySelector('.trust-chain').getBoundingClientRect();
-      
-      // Calculate new position relative to the trust chain container
-      let newX = e.clientX - trustChain.left - offsetX - node.offsetWidth / 2;
-      let newY = e.clientY - trustChain.top - offsetY - node.offsetHeight / 2;
-      
-      // Keep node within container bounds
-      newX = Math.max(0, Math.min(trustChain.width - node.offsetWidth, newX));
-      newY = Math.max(0, Math.min(trustChain.height - node.offsetHeight, newY));
-      
-      // Update node position
-      node.style.left = `${newX}px`;
-      node.style.top = `${newY}px`;
-      node.style.right = 'auto';
-      node.style.bottom = 'auto';
-      node.style.transform = 'none';
-      
-      // Update nodeData position
-      nodeData.x = newX + node.offsetWidth / 2;
-      nodeData.y = newY + node.offsetHeight / 2;
-      
-      // Update connected lines
-      lines.forEach(line => {
-        if (line.source.id === nodeId) {
-          line.element
-            .attr("x1", nodeData.x)
-            .attr("y1", nodeData.y);
-        }
-        if (line.target.id === nodeId) {
-          line.element
-            .attr("x2", nodeData.x)
-            .attr("y2", nodeData.y);
-        }
-      });
-    });
+    // Add visual feedback
+    event.target.classList.add('active-node');
+  }
+  
+  function dragging(event) {
+    const nodeId = event.target.getAttribute('data-node-id');
+    const node = nodeById[nodeId];
     
-    // Mouse up event to stop dragging
-    document.addEventListener('mouseup', function() {
-      if (isDragging) {
-        isDragging = false;
-        node.classList.remove('active-node');
-      }
+    // Update the fixed position
+    node.fx = Math.max(25, Math.min(trustChainRect.width - 25, event.x));
+    node.fy = Math.max(25, Math.min(trustChainRect.height - 25, event.y));
+  }
+  
+  function dragEnded(event) {
+    if (!event.active) simulation.alphaTarget(0);
+    const nodeId = event.target.getAttribute('data-node-id');
+    const node = nodeById[nodeId];
+    
+    // Release the fixed position for elastic rebound
+    node.fx = null;
+    node.fy = null;
+    
+    // Remove visual feedback
+    event.target.classList.remove('active-node');
+  }
+  
+  // Simulation tick function - updates positions of everything
+  simulation.on("tick", () => {
+    // Update link positions
+    link
+      .attr("x1", d => d.source.x)
+      .attr("y1", d => d.source.y)
+      .attr("x2", d => d.target.x)
+      .attr("y2", d => d.target.y);
+    
+    // Update HTML node positions
+    nodeData.forEach(node => {
+      const element = node.element;
+      // Position from center of node
+      element.style.left = `${node.x - node.width/2}px`;
+      element.style.top = `${node.y - node.height/2}px`;
+      element.style.transform = 'none';
+      element.style.right = 'auto';
+      element.style.bottom = 'auto';
     });
   });
+  
+  // Add a resize handler
+  window.addEventListener('resize', () => {
+    // Recalculate positions on resize
+    const newRect = trustChain.getBoundingClientRect();
+    simulation.force("center", d3.forceCenter(newRect.width / 2, newRect.height / 2));
+    simulation.alpha(0.3).restart();
+  });
+  
+  // Initialize node positions and start simulation
+  nodeData.forEach(node => {
+    // Set initial positions based on CSS
+    const element = node.element;
+    const rect = element.getBoundingClientRect();
+    node.x = rect.left - trustChainRect.left + rect.width/2;
+    node.y = rect.top - trustChainRect.top + rect.height/2;
+  });
+  
+  // Start simulation with high alpha for initial arrangement
+  simulation.alpha(1).restart();
 }
 
 // Recalculate connections when window is resized
@@ -506,14 +541,20 @@ window.addEventListener('DOMContentLoaded', () => {
   // Initialize trust chain animation with a slight delay to ensure nodes are positioned
   setTimeout(() => {
     initTrustChainAnimation();
-    // Initialize D3 connections separately after nodes are positioned
-    setTimeout(initD3Connections, 100);
-  }, 300);
+    
+    // Initialize D3 connections with physics simulation
+    setTimeout(() => {
+      initD3Connections();
+      // Mark trust chain as initialized to show nodes with transition
+      document.querySelector('.trust-chain').classList.add('initialized');
+    }, 300);
+  }, 500);
   
   // Listen for theme changes to update connections
   themeToggleBtn.addEventListener('click', () => {
+    // Reconnect after theme change
     setTimeout(() => {
       initD3Connections();
-    }, 100);
+    }, 200);
   });
 }); 

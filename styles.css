@@ -486,10 +486,16 @@ nav {
   position: absolute;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
   color: white;
-  transition: box-shadow 0.3s ease; /* Only transition the shadow, not position */
+  transition: box-shadow 0.3s ease;
   z-index: 2;
   user-select: none; /* Prevent text selection during drag */
   touch-action: none; /* Improve touch behavior */
+  will-change: transform, left, top; /* Optimize for animations */
+  cursor: grab; /* Show grab cursor to indicate draggable */
+}
+
+.node:active {
+  cursor: grabbing; /* Change to grabbing cursor when active */
 }
 
 .node i {
@@ -497,47 +503,20 @@ nav {
 }
 
 .node:hover {
-  /* Remove transform scale effect */
   z-index: 10;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-  cursor: move; /* Show move cursor */
 }
 
-/* Position nodes like in the image */
-.node-1 {
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
+/* Initial positioning - actual positions will be set by D3 force simulation */
+.node-1, .node-2, .node-3, .node-4, .node-5, .node-6 {
+  /* Force layout will handle positioning */
+  opacity: 0;
+  transition: opacity 0.5s ease;
 }
 
-.node-2 {
-  top: 140px;
-  left: 25%;
-  transform: translateX(-50%);
-}
-
-.node-3 {
-  top: 140px;
-  right: 25%;
-  transform: translateX(50%);
-}
-
-.node-4 {
-  bottom: 140px;
-  left: 25%;
-  transform: translateX(-50%);
-}
-
-.node-5 {
-  bottom: 140px;
-  right: 25%;
-  transform: translateX(50%);
-}
-
-.node-6 {
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
+/* Make nodes visible after they're positioned by the force layout */
+.trust-chain.initialized .node {
+  opacity: 1;
 }
 
 .pulse {
