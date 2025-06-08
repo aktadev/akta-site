@@ -283,6 +283,14 @@ function initD3Connections() {
   const trustChain = document.querySelector('.trust-chain');
   const trustChainRect = trustChain.getBoundingClientRect();
   
+  // Create the AKTA robot
+  if (!document.querySelector('.akta-robot')) {
+    const robot = document.createElement('div');
+    robot.className = 'akta-robot';
+    robot.innerHTML = '<i class="fas fa-robot"></i>';
+    trustChain.appendChild(robot);
+  }
+  
   // Clear any existing content
   svg.selectAll("*").remove();
   
@@ -481,9 +489,12 @@ function initD3Connections() {
     requestAnimationFrame(animateEnvelopes);
   }
   
-    // Start animation loop
+      // Start animation loop
   requestAnimationFrame(animateEnvelopes);
   
+  // Initialize robot animation
+  initRobotAnimation();
+
   // Implement manual drag handling for direct DOM elements
   nodeElements.forEach(element => {
     let isDragging = false;
@@ -598,6 +609,271 @@ function initD3Connections() {
   
   // Start simulation with high alpha for initial arrangement
   simulation.alpha(1).restart();
+  
+  // Robot Animation Functions
+  function initRobotAnimation() {
+    const robot = document.querySelector('.akta-robot');
+    const padlocks = [];
+    let targetNode = null;
+    let currentX = trustChainRect.width / 2;
+    let currentY = trustChainRect.height / 2;
+    let targetX = currentX;
+    let targetY = currentY;
+    let shootTimeout = null;
+    
+         // Position the robot initially
+     updateRobotPosition(currentX, currentY);
+     
+     // Function to choose a random node as target
+     function selectRandomTarget() {
+       const availableNodes = Array.from(nodeElements);
+       targetNode = availableNodes[Math.floor(Math.random() * availableNodes.length)];
+       const nodeRect = targetNode.getBoundingClientRect();
+       targetX = nodeRect.left - trustChainRect.left + nodeRect.width/2;
+       targetY = nodeRect.top - trustChainRect.top + nodeRect.height/2;
+       
+       // Add some randomness to target position for more natural movement
+       targetX += (Math.random() - 0.5) * 30;
+       targetY += (Math.random() - 0.5) * 30;
+       
+       // Rotate robot to face target with slight delay for smoother motion
+       setTimeout(() => {
+         const angle = Math.atan2(targetY - currentY, targetX - currentX) * 180 / Math.PI;
+         robot.style.transform = `rotate(${angle}deg)`;
+       }, 100);
+     }
+     
+     // Function to update robot position with easing
+     function updateRobotPosition(x, y) {
+       robot.style.left = `${x - 25}px`; // 25 is half the robot width
+       robot.style.top = `${y - 25}px`;
+     }
+     
+     // Track active animations to limit concurrent animations
+     let activeAnimationCount = 0;
+     const MAX_CONCURRENT_ANIMATIONS = 3;
+     let lastFrameTime = 0;
+     let frameCount = 0;
+     let throttleFactor = 1;
+     
+     // Function to move the robot towards target
+     function moveRobot(timestamp) {
+       // Calculate frame time for adaptive throttling
+       if (lastFrameTime) {
+         const frameTime = timestamp - lastFrameTime;
+         // Adjust throttling based on frame time
+         if (frameCount % 10 === 0) { // Check every 10 frames
+           if (frameTime > 30) { // If frame time is high (less than 33fps)
+             throttleFactor = Math.min(throttleFactor + 0.1, 3); // Increase throttle up to max 3x
+           } else if (frameTime < 16) { // If frame time is low (more than 60fps)
+             throttleFactor = Math.max(throttleFactor - 0.1, 1); // Decrease throttle down to min 1x
+           }
+         }
+       }
+       lastFrameTime = timestamp;
+       frameCount++;
+       
+       // Calculate distance to target
+       const dx = targetX - currentX;
+       const dy = targetY - currentY;
+       const distance = Math.sqrt(dx * dx + dy * dy);
+       
+       // Calculate angle for rotation
+       const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+       robot.style.transform = `rotate(${angle}deg)`;
+       
+       // If close to target, shoot and select new target
+       if (distance < 40) {
+         // Only shoot if we're not over the animation limit
+         if (activeAnimationCount < MAX_CONCURRENT_ANIMATIONS) {
+           // Stop briefly and shoot
+           setTimeout(() => {
+             shootPadlock();
+             
+             // Wait a moment before choosing new target
+             setTimeout(selectRandomTarget, 1200 * throttleFactor); // Longer delay when throttling
+           }, 200);
+         } else {
+           // Skip shooting and just select a new target
+           setTimeout(selectRandomTarget, 500);
+         }
+         
+         // Add small random movement while waiting
+         currentX += (Math.random() - 0.5) * 2;
+         currentY += (Math.random() - 0.5) * 2;
+         updateRobotPosition(currentX, currentY);
+       } else {
+         // Calculate speed based on distance (faster when further)
+         const speed = Math.min(0.05, Math.max(0.01, distance / 2000));
+         
+         // Move towards target with easing
+         currentX += dx * speed;
+         currentY += dy * speed;
+         
+         // Add slight wobble (reduced)
+         if (frameCount % 3 === 0) { // Only apply wobble every 3 frames
+           currentX += (Math.random() - 0.5) * 0.4;
+           currentY += (Math.random() - 0.5) * 0.4;
+         }
+         
+         updateRobotPosition(currentX, currentY);
+         
+         // Occasionally shoot while moving (much less frequently)
+         if (!shootTimeout && Math.random() < 0.001 && activeAnimationCount < MAX_CONCURRENT_ANIMATIONS) {
+           shootTimeout = setTimeout(() => {
+             shootPadlock();
+             shootTimeout = null;
+           }, 300);
+         }
+       }
+       
+       // Continue animation
+       requestAnimationFrame(moveRobot);
+     }
+    
+         // Function to create and animate a padlock
+     function shootPadlock() {
+       // Track active animations
+       activeAnimationCount++;
+       if (activeAnimationCount > MAX_CONCURRENT_ANIMATIONS) {
+         activeAnimationCount--;
+         return; // Skip animation if too many active
+       }
+       
+       // Create a padlock element
+       const padlock = document.createElement('div');
+       padlock.className = 'padlock';
+       padlock.innerHTML = '<i class="fas fa-lock"></i>';
+       padlock.style.left = `${currentX - 15}px`; // 15 is half the padlock width
+       padlock.style.top = `${currentY - 15}px`;
+       trustChain.appendChild(padlock);
+       
+       // Play a simple transform on the robot when shooting
+       robot.style.transform = `rotate(${Math.atan2(targetY - currentY, targetX - currentX) * 180 / Math.PI}deg) scale(1.15)`;
+       setTimeout(() => {
+         robot.style.transform = `rotate(${Math.atan2(targetY - currentY, targetX - currentX) * 180 / Math.PI}deg) scale(1)`;
+       }, 150);
+       
+       // Calculate trajectory
+       const nodeRect = targetNode.getBoundingClientRect();
+       const targetNodeX = nodeRect.left - trustChainRect.left + nodeRect.width/2;
+       const targetNodeY = nodeRect.top - trustChainRect.top + nodeRect.height/2;
+       const angle = Math.atan2(targetNodeY - currentY, targetNodeX - currentX);
+       
+       // Add slight arc to trajectory (reduced arc height)
+       const arcHeight = Math.random() * 20 + 10;
+       
+       // Pre-calculate distance and other constants
+       const distance = Math.sqrt(
+         Math.pow(targetNodeX - currentX, 2) + 
+         Math.pow(targetNodeY - currentY, 2)
+       );
+       
+       // Use animation frames more efficiently with time steps
+       let lastTimestamp = 0;
+       let progress = 0;
+       const speed = 0.08; // Faster animation to reduce active time
+       
+       const animatePadlock = (timestamp) => {
+         // Use time delta for smooth animation regardless of frame rate
+         const delta = lastTimestamp ? (timestamp - lastTimestamp) / 1000 : 0.016; // 16ms default if first frame
+         lastTimestamp = timestamp;
+         
+         // Increment progress based on time delta and speed
+         progress += speed * delta * 60; // normalize to 60fps
+         
+         if (progress >= 1) {
+           // Remove padlock and cleanup
+           padlock.remove();
+           
+           // Flash the node
+           targetNode.classList.add('node-flash');
+           
+           // Add a simple transform
+           targetNode.style.transform = 'scale(1.2)';
+           setTimeout(() => {
+             targetNode.style.transform = '';
+           }, 150);
+           
+           setTimeout(() => {
+             targetNode.classList.remove('node-flash');
+           }, 500);
+           
+           // Create simplified burst effect
+           createBurstEffect(targetNodeX, targetNodeY);
+           
+           // Decrement active animations
+           activeAnimationCount--;
+           return;
+         }
+         
+         // Calculate current position with arc (more efficient calculation)
+         const currentDistance = distance * progress;
+         const arcOffset = Math.sin(progress * Math.PI) * arcHeight;
+         
+         const x = currentX + Math.cos(angle) * currentDistance;
+         const y = currentY + Math.sin(angle) * currentDistance - arcOffset;
+         
+         // Update padlock position
+         padlock.style.left = `${x - 15}px`;
+         padlock.style.top = `${y - 15}px`;
+         
+         // Simpler rotation logic
+         const rotationAngle = angle * 180 / Math.PI + (progress * 360); // Half as many rotations
+         padlock.style.transform = `rotate(${rotationAngle}deg) scale(${1 + progress * 0.3})`;
+         
+         // Continue animation
+         requestAnimationFrame(animatePadlock);
+       };
+       
+       // Start animation
+       requestAnimationFrame(animatePadlock);
+     }
+     
+     // Create a simplified burst effect when padlock hits a node
+     function createBurstEffect(x, y) {
+       // Create fewer particles (4 instead of 8)
+       for (let i = 0; i < 4; i++) {
+         const particle = document.createElement('div');
+         particle.className = 'padlock';
+         particle.style.width = '10px'; // Smaller particles
+         particle.style.height = '10px';
+         particle.style.opacity = '0.7';
+         particle.innerHTML = '<i class="fas fa-certificate"></i>';
+         particle.style.left = `${x - 5}px`;
+         particle.style.top = `${y - 5}px`;
+         trustChain.appendChild(particle);
+         
+         // Calculate particle angle
+         const angle = (i / 4) * Math.PI * 2;
+         
+         // Use CSS animations for particles instead of JS animation
+         const distance = 40; // Fixed distance
+         const particleX = x + Math.cos(angle) * distance;
+         const particleY = y + Math.sin(angle) * distance;
+         
+         // Set up CSS transition
+         particle.style.transition = 'all 0.5s ease-out';
+         
+         // Trigger animation in next frame
+         setTimeout(() => {
+           particle.style.left = `${particleX - 5}px`;
+           particle.style.top = `${particleY - 5}px`;
+           particle.style.opacity = '0';
+           particle.style.transform = 'scale(0.5)';
+           
+           // Remove after animation completes
+           setTimeout(() => {
+             particle.remove();
+           }, 500);
+         }, 10);
+       }
+     }
+    
+    // Start the robot animation with initial target
+    selectRandomTarget();
+    moveRobot();
+  }
 }
 
 // Recalculate connections when window is resized

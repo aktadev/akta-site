@@ -504,6 +504,145 @@ nav {
   font-size: 1.4rem;
 }
 
+/* Robot Animation */
+.akta-robot {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  background: var(--primary-color);
+  border-radius: 50%;
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.7));
+  pointer-events: none;
+  transition: transform 0.2s ease;
+  border: 2px solid #fff;
+  overflow: hidden;
+}
+
+[data-theme="dark"] .akta-robot {
+  filter: drop-shadow(0 0 12px rgba(0, 0, 0, 0.7));
+  border: 2px solid #000;
+}
+
+.akta-robot i {
+  color: white;
+  font-size: 26px;
+  animation: robotPulse 1.5s infinite alternate;
+}
+
+[data-theme="dark"] .akta-robot i {
+  color: white;
+}
+
+@keyframes robotPulse {
+  0% {
+    transform: scale(1);
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+  }
+  100% {
+    transform: scale(1.1);
+    text-shadow: 0 0 15px rgba(255, 255, 255, 1);
+  }
+}
+
+.akta-robot::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.8) 0%, rgba(0, 0, 0, 0) 70%);
+  opacity: 0.2;
+  pointer-events: none;
+}
+
+/* Padlock Animation */
+.padlock {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  transition: transform 0.1s ease;
+  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
+}
+
+.padlock i {
+  color: gold;
+  font-size: 18px;
+  animation: padlockSpin 0.4s linear infinite;
+}
+
+@keyframes padlockSpin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+[data-theme="dark"] .padlock i {
+  color: gold;
+}
+
+/* Padlock Trail Effect */
+.padlock::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, rgba(255, 215, 0, 0.7) 0%, rgba(255, 215, 0, 0) 70%);
+  opacity: 0.5;
+  border-radius: 50%;
+}
+
+/* Node Flash Animation */
+@keyframes nodeFlash {
+  0% {
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+    transform: scale(1.15);
+  }
+  100% {
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    transform: scale(1);
+  }
+}
+
+.node-flash {
+  animation: nodeFlash 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.node-flash i {
+  animation: iconPulse 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes iconPulse {
+  0% {
+    color: white;
+    transform: scale(1);
+  }
+  50% {
+    color: gold;
+    transform: scale(1.3);
+  }
+  100% {
+    color: white;
+    transform: scale(1);
+  }
+}
+
 .node:hover {
   z-index: 10;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
