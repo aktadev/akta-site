@@ -1432,24 +1432,11 @@ footer {
 
 /* Custom Cursor */
 .custom-cursor {
-  position: fixed;
-  width: 20px;
-  height: 20px;
-  border: 2px solid var(--primary-color);
-  border-radius: 50%;
-  pointer-events: none;
-  transform: translate(-50%, -50%);
-  transition: width 0.2s, height 0.2s;
-  z-index: 9999;
-  opacity: 0.7;
-  backdrop-filter: invert(1);
+  display: none;  /* Hide cursor completely */
 }
 
 .custom-cursor.active {
-  width: 40px;
-  height: 40px;
-  opacity: 0.3;
-  border-color: var(--secondary-color);
+  display: none;  /* Hide cursor completely */
 }
 
 @media (max-width: 992px) {

@@ -196,26 +196,9 @@ function handleScrollIndicator() {
   }
 }
 
-// Custom cursor effect (subtle)
+// Custom cursor effect (disabled)
 function initCustomCursor() {
-  const cursor = document.createElement('div');
-  cursor.className = 'custom-cursor';
-  body.appendChild(cursor);
-  
-  document.addEventListener('mousemove', (e) => {
-    cursor.style.left = e.clientX + 'px';
-    cursor.style.top = e.clientY + 'px';
-  });
-  
-  const links = document.querySelectorAll('a, button');
-  links.forEach(link => {
-    link.addEventListener('mouseenter', () => {
-      cursor.classList.add('active');
-    });
-    link.addEventListener('mouseleave', () => {
-      cursor.classList.remove('active');
-    });
-  });
+  // Function disabled - cursor removed
 }
 
 // Animation for trust chain data exchange
