@@ -61,7 +61,7 @@ function toggleMobileMenu() {
     <div class="mobile-menu-links">
       <a href="#overview">Overview</a>
       <a href="#challenge">Challenge</a>
-      <a href="#concepts">Concepts</a>
+      <a href="#gearing">Framework</a>
       <a href="#delegation">Delegation</a>
       <a href="#use-cases">Use Cases</a>
       <a href="#features">Features</a>
@@ -952,6 +952,9 @@ window.addEventListener('DOMContentLoaded', () => {
     }, 300);
   }, 500);
 
+  // Initialize gearing visualization
+  initGearingVisualization();
+
   // Listen for theme changes to update connections
   themeToggleBtn.addEventListener('click', () => {
     // Reconnect after theme change
@@ -960,3 +963,137 @@ window.addEventListener('DOMContentLoaded', () => {
     }, 200);
   });
 });
+
+// Epicyclic Gearing Visualization
+function initGearingVisualization() {
+  // Only initialize if the element exists
+  const container = document.getElementById('gearing-visualization');
+  if (!container) return;
+
+  // Create SVG element
+  const svg = d3.create("svg")
+    .attr("width", "100%")
+    .attr("height", "100%")
+    .attr("viewBox", [-0.53, -0.53, 1.06, 1.06])
+    .attr("stroke", "var(--text-color)")
+    .attr("stroke-width", 1 / 640)
+    .attr("style", "max-width: 100%; height: 100%;");
+
+  // Create a frame for rotation
+  const frame = svg.append("g");
+
+  // Set up gear data
+  const gearData = [
+    {fill: "var(--card-bg-color)", teeth: 80, radius: -0.5, origin: [0, 0], annulus: true, label: "", type: "outer"},
+    {fill: "var(--primary-color)", teeth: 16, radius: +0.1, origin: [0, 0], label: "AKTA", type: "center"},
+    {fill: "var(--secondary-color)", teeth: 32, radius: -0.2, origin: [0, -0.3], label: "VERIFY", type: "inner"},
+    {fill: "var(--secondary-color)", teeth: 32, radius: -0.2, origin: [-0.3 * Math.sin(2 * Math.PI / 3), -0.3 * Math.cos(2 * Math.PI / 3)], label: "DELEGATE", type: "inner"},
+    {fill: "var(--secondary-color)", teeth: 32, radius: -0.2, origin: [0.3 * Math.sin(2 * Math.PI / 3), -0.3 * Math.cos(2 * Math.PI / 3)], label: "AUDIT", type: "inner"}
+  ];
+
+  // Create gears
+  const path = frame.selectAll("path")
+    .data(gearData)
+    .join("path")
+      .attr("fill", d => d.fill)
+      .attr("d", d => gear({...d, toothRadius: 0.008, holeRadius: 0.02}));
+
+  // Append the SVG to the container
+  container.appendChild(svg.node());
+
+  // Add text labels
+  const labelContainer = d3.select(container);
+  
+  // Add gear labels
+  gearData.forEach((d, i) => {
+    if (d.label) {
+      const labelClass = d.type === "center" ? "center-label" : "outer-label";
+      
+      labelContainer.append("div")
+        .attr("class", `gear-label ${labelClass} label-${i}`)
+        .style("left", `calc(50% + ${d.origin[0] * 350}px)`)
+        .style("top", `calc(50% + ${d.origin[1] * 350}px)`)
+        .text(d.label);
+    }
+  });
+  
+  // Animation loop
+  let angle = 0;
+  let frameAngle = 0;
+  const speed = 0.08;
+  const frameRadius = -0.5; // Same as the outermost gear radius
+  
+  function animate() {
+    // Update gear positions
+    path.attr("transform", d => `translate(${d.origin}) rotate(${(angle / d.radius) % 360})`);
+    frame.attr("transform", `rotate(${frameAngle % 360})`);
+    
+    // Update label positions
+    gearData.forEach((d, i) => {
+      if (d.label) {
+        const rotatedAngle = frameAngle + (angle / d.radius);
+        if (d.type === "center") {
+          d3.select(`.label-${i}`)
+            .style("transform", `translate(-50%, -50%)`);
+        } else {
+          const radians = (frameAngle * Math.PI / 180);
+          const originX = d.origin[0] * Math.cos(radians) - d.origin[1] * Math.sin(radians);
+          const originY = d.origin[0] * Math.sin(radians) + d.origin[1] * Math.cos(radians);
+          
+          d3.select(`.label-${i}`)
+            .style("left", `calc(50% + ${originX * 350}px)`)
+            .style("top", `calc(50% + ${originY * 350}px)`)
+            .style("transform", `translate(-50%, -50%) rotate(${-rotatedAngle}deg)`);
+        }
+      }
+    });
+    
+    // Increment angles
+    angle += speed;
+    frameAngle += speed / frameRadius;
+    
+    // Continue animation
+    requestAnimationFrame(animate);
+  }
+  
+  // Start animation
+  animate();
+  
+  // Update colors on theme change
+  themeToggleBtn.addEventListener('click', () => {
+    setTimeout(() => {
+      path.attr("stroke", "var(--text-color)");
+      path.each(function(d, i) {
+        if (i === 0) d3.select(this).attr("fill", "var(--card-bg-color)");
+        else if (i === 1) d3.select(this).attr("fill", "var(--primary-color)");
+        else d3.select(this).attr("fill", "var(--secondary-color)");
+      });
+    }, 100);
+  });
+
+  // Gear path generator function
+  function gear({teeth, radius, annulus, toothRadius, holeRadius}) {
+    const n = teeth;
+    let r2 = Math.abs(radius);
+    let r0 = r2 - toothRadius;
+    let r1 = r2 + toothRadius;
+    let r3 = holeRadius;
+    if (annulus) r3 = r0, r0 = r1, r1 = r3, r3 = r2 + toothRadius * 3;
+    const da = Math.PI / n;
+    let a0 = -Math.PI / 2 + (annulus ? Math.PI / n : 0);
+    const path = ["M", r0 * Math.cos(a0), ",", r0 * Math.sin(a0)];
+    let i = -1;
+    while (++i < n) {
+      path.push(
+        "A", r0, ",", r0, " 0 0,1 ", r0 * Math.cos(a0 += da), ",", r0 * Math.sin(a0),
+        "L", r2 * Math.cos(a0), ",", r2 * Math.sin(a0),
+        "L", r1 * Math.cos(a0 += da / 3), ",", r1 * Math.sin(a0),
+        "A", r1, ",", r1, " 0 0,1 ", r1 * Math.cos(a0 += da / 3), ",", r1 * Math.sin(a0),
+        "L", r2 * Math.cos(a0 += da / 3), ",", r2 * Math.sin(a0),
+        "L", r0 * Math.cos(a0), ",", r0 * Math.sin(a0)
+      );
+    }
+    path.push("M0,", -r3, "A", r3, ",", r3, " 0 0,0 0,", r3, "A", r3, ",", r3, " 0 0,0 0,", -r3, "Z");
+    return path.join("");
+  }
+}
