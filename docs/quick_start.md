@@ -102,14 +102,14 @@ Credentials can be revoked using several mechanisms:
 
 ## Next Steps
 
-- Check out the [full documentation](https://github.com/akta/docs)
-- Explore the [examples directory](https://github.com/akta/examples)
-- Join the [community discussions](https://github.com/akta/discussions)
+- Check out the [full documentation](https://github.com/RedDotRocket/akta/docs)
+- Explore the [examples directory](https://github.com/RedDotRocket/akta/examples)
+- Join the [community discussions](https://github.com/RedDotRocket/akta/discussions)
 
 ## Need Help?
 
 If you run into any issues or have questions, please:
 
-- Check the [FAQ](https://github.com/akta/docs/faq.md)
-- Open an [issue](https://github.com/akta/issues)
-- Reach out via [discussions](https://github.com/akta/discussions) 
+- Check the [FAQ](https://github.com/RedDotRocket/akta/docs/faq.md)
+- Open an [issue](https://github.com/RedDotRocket/akta/issues)
+- Reach out via [discussions](https://github.com/RedDotRocket/akta/discussions)

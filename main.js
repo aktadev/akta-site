@@ -67,7 +67,7 @@ function toggleMobileMenu() {
       <a href="#features">Features</a>
     </div>
     <div class="mobile-menu-actions">
-      <a href="https://github.com/akta" target="_blank">
+      <a href="https://github.com/RedDotRocket/akta" target="_blank">
         <i class="fab fa-github"></i> GitHub
       </a>
       <button id="mobile-theme-toggle">

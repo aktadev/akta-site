@@ -19,7 +19,7 @@ The AKTA website is a static site built with HTML, CSS, and JavaScript, designed
 To run the site locally, simply clone the repository and open the `index.html` file in your browser:
 
 ```bash
-git clone https://github.com/akta-site.git
+git clone https://github.com/RedDotRocket/akta-site.git
 cd akta-site
 ```
 
